@@ -13,7 +13,9 @@ export default defineConfig({
       'src/**/*.test.ts',
       'src/**/*.test.tsx',
     ],
-    // API tests override via @vitest-environment node comment in each file
+    environmentMatchGlobs: [
+      ['__tests__/api/**/*.test.ts', 'node'],
+    ],
   },
   resolve: {
     alias: {

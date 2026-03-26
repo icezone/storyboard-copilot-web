@@ -1,92 +1,98 @@
-'use client'
+import type { AiGateway, GenerateImagePayload } from '../application/ports';
+import { imageUrlToDataUrl } from '../application/imageData';
 
-/**
- * Web AI Gateway — canvas-side adapter that calls the Next.js AI API routes.
- * This is a skeleton implementation; canvas-dev will wire it up to the full
- * AiGateway port defined in application/ports.ts.
- */
-
-export interface WebAiGenerateRequest {
-  modelId: string
-  prompt: string
-  negativePrompt?: string
-  aspectRatio?: string
-  width?: number
-  height?: number
-  imageUrl?: string
-  steps?: number
-  cfgScale?: number
-  seed?: number
-  extraParams?: Record<string, unknown>
-  projectId: string
-  creditCost?: number
-}
-
-export interface WebAiGenerateResult {
-  /** Populated immediately for synchronous providers */
-  imageUrl?: string
-  /** Populated for asynchronous providers — use to poll job status */
-  jobId?: string
-  /** 'completed' for sync, 'pending' for async */
-  status: 'completed' | 'pending'
-}
-
-export interface WebJobStatusResult {
-  status: 'pending' | 'processing' | 'completed' | 'failed'
-  imageUrl?: string
-  errorMessage?: string
-  progress?: number
-}
-
-/**
- * Submit an image generation request.
- * Returns immediately with either an imageUrl (sync) or a jobId (async).
- */
-export async function generateImage(
-  request: WebAiGenerateRequest
-): Promise<WebAiGenerateResult> {
-  const response = await fetch('/api/ai/image/generate', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(request),
-  })
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({ error: response.statusText }))
-    const message = (errorData as { error?: string }).error ?? 'Image generation failed'
-    throw new Error(message)
+async function normalizeReferenceImages(
+  payload: GenerateImagePayload
+): Promise<string[] | undefined> {
+  if (!payload.referenceImages || payload.referenceImages.length === 0) {
+    return undefined;
   }
 
-  const data = (await response.json()) as {
-    imageUrl?: string
-    jobId?: string
-    status?: string
+  // For KIE and FAL models, convert images to data URLs for upload
+  const isKieModel = payload.model.startsWith('kie/');
+  const isFalModel = payload.model.startsWith('fal/');
+
+  if (isKieModel || isFalModel) {
+    return Promise.all(
+      payload.referenceImages.map((imageUrl) => imageUrlToDataUrl(imageUrl))
+    );
   }
 
-  if (data.imageUrl) {
-    return { imageUrl: data.imageUrl, jobId: data.jobId, status: 'completed' }
-  }
-
-  if (data.jobId) {
-    return { jobId: data.jobId, status: 'pending' }
-  }
-
-  throw new Error('AI generate returned neither imageUrl nor jobId')
+  return payload.referenceImages;
 }
 
-/**
- * Poll the status of an async image generation job.
- */
-export async function pollJobStatus(jobId: string): Promise<WebJobStatusResult> {
-  const response = await fetch(`/api/jobs/${encodeURIComponent(jobId)}`, {
-    method: 'GET',
-  })
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({ error: response.statusText }))
-    const message = (errorData as { error?: string }).error ?? 'Failed to get job status'
-    throw new Error(message)
+export class WebAiGateway implements AiGateway {
+  async setApiKey(_provider: string, _apiKey: string): Promise<void> {
+    // Web version: API keys are stored in settings store and sent per-request.
+    // This is a no-op for the gateway itself.
   }
 
-  return response.json() as Promise<WebJobStatusResult>
+  async generateImage(payload: GenerateImagePayload): Promise<string> {
+    const normalizedReferenceImages = await normalizeReferenceImages(payload);
+    const response = await fetch('/api/ai/image/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        prompt: payload.prompt,
+        model: payload.model,
+        size: payload.size,
+        aspect_ratio: payload.aspectRatio,
+        reference_images: normalizedReferenceImages,
+        extra_params: payload.extraParams,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || `AI generation failed: ${response.status}`);
+    }
+
+    const data = await response.json() as { imageUrl: string };
+    return data.imageUrl;
+  }
+
+  async submitGenerateImageJob(payload: GenerateImagePayload): Promise<string> {
+    const normalizedReferenceImages = await normalizeReferenceImages(payload);
+    const response = await fetch('/api/ai/image/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        prompt: payload.prompt,
+        model: payload.model,
+        size: payload.size,
+        aspect_ratio: payload.aspectRatio,
+        reference_images: normalizedReferenceImages,
+        extra_params: payload.extraParams,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || `AI job submission failed: ${response.status}`);
+    }
+
+    const data = await response.json() as { jobId: string };
+    return data.jobId;
+  }
+
+  async getGenerateImageJob(jobId: string): Promise<{
+    job_id: string;
+    status: 'queued' | 'running' | 'succeeded' | 'failed' | 'not_found';
+    result?: string | null;
+    error?: string | null;
+  }> {
+    const response = await fetch(`/api/jobs/${jobId}`);
+
+    if (response.status === 404) {
+      return { job_id: jobId, status: 'not_found' };
+    }
+
+    if (!response.ok) {
+      throw new Error(`Failed to get job status: ${response.status}`);
+    }
+
+    return response.json();
+  }
 }
+
+export const webAiGateway = new WebAiGateway();

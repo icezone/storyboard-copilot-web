@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server'
-import { createServerClient, getAuthUser } from '@/lib/supabase/server'
+import { createClient, getAuthUser } from '@/lib/supabase/server'
 import { createProjectSchema } from '@/lib/validation'
 
 export async function GET(_request: Request) {
-  const supabase = await createServerClient()
+  const supabase = await createClient()
   const user = await getAuthUser(supabase)
   if (!user) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
@@ -23,7 +23,7 @@ export async function GET(_request: Request) {
 }
 
 export async function POST(request: Request) {
-  const supabase = await createServerClient()
+  const supabase = await createClient()
   const user = await getAuthUser(supabase)
   if (!user) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
