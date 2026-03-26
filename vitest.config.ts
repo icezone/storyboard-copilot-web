@@ -6,7 +6,13 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./vitest.setup.ts'],
-    include: ['__tests__/unit/**/*.test.ts', '__tests__/unit/**/*.test.tsx', '__tests__/api/**/*.test.ts', 'src/**/*.test.ts', 'src/**/*.test.tsx'],
+    include: [
+      '__tests__/unit/**/*.test.ts',
+      '__tests__/unit/**/*.test.tsx',
+      '__tests__/api/**/*.test.ts',
+      'src/**/*.test.ts',
+      'src/**/*.test.tsx',
+    ],
     environmentMatchGlobs: [
       ['__tests__/api/**', 'node'],
     ],
