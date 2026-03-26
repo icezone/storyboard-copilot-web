@@ -1,4 +1,4 @@
-import { AIProvider } from './types'
+import type { AIProvider } from './types'
 
 const providers = new Map<string, AIProvider>()
 

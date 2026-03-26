@@ -2,9 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient, getAuthUser } from '@/lib/supabase/server'
 import { getProvider } from '@/server/ai/registry'
 import { getJob, updateJobStatus, JobNotFoundError } from '@/server/jobs/jobService'
+import { getVideoProvider } from '@/server/video/registry'
 
-// Ensure providers are registered
+// Ensure all providers are registered
 import '@/server/ai/index'
+import '@/server/video/index'
 
 export async function GET(
   request: NextRequest,
@@ -24,11 +26,66 @@ export async function GET(
 
     // If job is still pending/running, try to poll the provider
     if (job.status === 'pending' || job.status === 'running') {
-      const provider = getProvider(job.provider_id)
+      // Try video provider first, then image provider
+      const videoProvider = getVideoProvider(job.provider_id)
+      const imageProvider = getProvider(job.provider_id)
 
-      if (provider?.pollJob && job.external_job_id) {
+      if (videoProvider && job.external_job_id) {
         try {
-          const pollResult = await provider.pollJob(job.external_job_id)
+          const pollResult = await videoProvider.pollJob(job.external_job_id)
+
+          if (pollResult.status === 'completed') {
+            await updateJobStatus(jobId, 'completed', { outputUrl: pollResult.videoUrl })
+
+            // Register asset if video URL is available
+            if (pollResult.videoUrl && job.project_id && job.project_id !== 'system') {
+              await supabase
+                .from('project_assets')
+                .insert({
+                  project_id: job.project_id,
+                  type: 'video',
+                  url: pollResult.videoUrl,
+                  job_id: jobId,
+                })
+                .then(({ error }) => {
+                  if (error) {
+                    console.error('Failed to register video asset:', error.message)
+                  }
+                })
+            }
+
+            return NextResponse.json({
+              status: 'completed',
+              videoUrl: pollResult.videoUrl,
+              coverImageUrl: pollResult.coverImageUrl,
+            })
+          } else if (pollResult.status === 'failed') {
+            await updateJobStatus(jobId, 'failed', {
+              errorMessage: pollResult.errorMessage,
+            })
+            return NextResponse.json({
+              status: 'failed',
+              errorMessage: pollResult.errorMessage,
+            })
+          } else {
+            const mappedStatus = pollResult.status === 'processing' ? 'running' : job.status
+            if (mappedStatus !== job.status) {
+              await supabase
+                .from('ai_jobs')
+                .update({ status: mappedStatus, updated_at: new Date().toISOString() })
+                .eq('id', jobId)
+            }
+            return NextResponse.json({
+              status: pollResult.status,
+              progress: pollResult.progress,
+            })
+          }
+        } catch (pollError) {
+          console.error(`Poll error for job ${jobId}:`, pollError)
+        }
+      } else if (imageProvider?.pollJob && job.external_job_id) {
+        try {
+          const pollResult = await imageProvider.pollJob(job.external_job_id)
 
           if (pollResult.status === 'completed') {
             await updateJobStatus(jobId, 'completed', { outputUrl: pollResult.imageUrl })
@@ -45,7 +102,6 @@ export async function GET(
               errorMessage: pollResult.errorMessage,
             })
           } else {
-            // Still pending/processing — update to running if needed
             const mappedStatus = pollResult.status === 'processing' ? 'running' : job.status
             if (mappedStatus !== job.status) {
               await supabase
@@ -60,7 +116,6 @@ export async function GET(
           }
         } catch (pollError) {
           console.error(`Poll error for job ${jobId}:`, pollError)
-          // Fall through to return current DB status if polling fails
         }
       }
     }
@@ -73,7 +128,7 @@ export async function GET(
     if (job.result) {
       const result = job.result as { url?: string }
       if (result.url) {
-        responseBody.imageUrl = result.url
+        responseBody.outputUrl = result.url
       }
     }
 
@@ -83,7 +138,10 @@ export async function GET(
 
     return NextResponse.json(responseBody)
   } catch (error) {
-    if (error instanceof JobNotFoundError || (error instanceof Error && error.name === 'JobNotFoundError')) {
+    if (
+      error instanceof JobNotFoundError ||
+      (error instanceof Error && error.name === 'JobNotFoundError')
+    ) {
       return NextResponse.json({ error: 'Job not found' }, { status: 404 })
     }
     console.error('Job status error:', error)
