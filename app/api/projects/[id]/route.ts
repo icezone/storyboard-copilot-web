@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createServerClient, getAuthUser } from '@/lib/supabase/server'
+import { createClient, getAuthUser } from '@/lib/supabase/server'
 import { uuidSchema, updateProjectSchema } from '@/lib/validation'
 
 type RouteContext = { params: Promise<{ id: string }> }
@@ -10,7 +10,7 @@ export async function GET(request: Request, context: RouteContext) {
     return NextResponse.json({ error: 'invalid id' }, { status: 400 })
   }
 
-  const supabase = await createServerClient()
+  const supabase = await createClient()
   const user = await getAuthUser(supabase)
   if (!user) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
@@ -35,7 +35,7 @@ export async function PATCH(request: Request, context: RouteContext) {
     return NextResponse.json({ error: 'invalid id' }, { status: 400 })
   }
 
-  const supabase = await createServerClient()
+  const supabase = await createClient()
   const user = await getAuthUser(supabase)
   if (!user) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
@@ -67,7 +67,7 @@ export async function DELETE(_request: Request, context: RouteContext) {
     return NextResponse.json({ error: 'invalid id' }, { status: 400 })
   }
 
-  const supabase = await createServerClient()
+  const supabase = await createClient()
   const user = await getAuthUser(supabase)
   if (!user) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 })

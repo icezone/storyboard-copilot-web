@@ -46,7 +46,7 @@ const mock = vi.hoisted(() => {
 })
 
 vi.mock('@/lib/supabase/server', () => ({
-  createServerClient: () => Promise.resolve(mock.client),
+  createClient: () => Promise.resolve(mock.client),
   getAuthUser: async (supabase: { auth: { getUser: () => Promise<{ data: { user: unknown } }> } }) => {
     const { data } = await supabase.auth.getUser()
     return data.user

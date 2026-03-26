@@ -12,18 +12,41 @@ export interface Viewport {
 export interface CanvasDraft {
   nodes: unknown[]
   edges: unknown[]
+  history?: unknown
+  viewport?: Viewport
   [key: string]: unknown
+}
+
+// Canvas-compatible project snapshot for Canvas.tsx
+export interface CanvasProjectSnapshot {
+  id: string
+  name?: string
+  nodes: unknown[]
+  edges: unknown[]
+  history?: unknown
+  viewport?: Viewport
 }
 
 interface ProjectState {
   saveStatus: SaveStatus
   currentProjectId: string | null
+  currentProject: CanvasProjectSnapshot | null
   revision: number
   setCurrentProject: (id: string) => void
   save: (data: CanvasDraft) => void
   load: (projectId: string) => Promise<CanvasDraft | null>
   saveViewport: (viewport: Viewport) => void
   _cleanup: () => void
+  // Canvas.tsx-compatible adapter methods
+  getCurrentProject: () => CanvasProjectSnapshot | null
+  saveCurrentProject: (
+    nodes: unknown[],
+    edges: unknown[],
+    viewport: Viewport,
+    history?: unknown
+  ) => void
+  saveCurrentProjectViewport: (viewport: Viewport) => void
+  cancelPendingViewportPersist: () => void
 }
 
 const DEBOUNCE_MS = 1000
@@ -40,6 +63,7 @@ let broadcastChannel: BroadcastChannel | null = null
 export const useProjectStore = create<ProjectState>((set, get) => ({
   saveStatus: 'saved',
   currentProjectId: null,
+  currentProject: null,
   revision: 0,
 
   setCurrentProject(id: string) {
@@ -117,14 +141,35 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       const res = await fetch(`/api/projects/${projectId}/draft`)
       if (res.ok) {
         const remote = await res.json()
-        set({ revision: remote.revision, saveStatus: 'saved' })
-        return remote.data as CanvasDraft
+        const draft = remote.data as CanvasDraft
+        set({
+          revision: remote.revision,
+          saveStatus: 'saved',
+          currentProject: {
+            id: projectId,
+            nodes: Array.isArray(draft?.nodes) ? draft.nodes : [],
+            edges: Array.isArray(draft?.edges) ? draft.edges : [],
+            history: draft?.history,
+            viewport: draft?.viewport as Viewport | undefined,
+          },
+        })
+        return draft
       }
     } catch {
       // 离线，使用本地缓存
       if (local) {
-        set({ saveStatus: 'offline' })
-        return local as CanvasDraft
+        const draft = local as CanvasDraft
+        set({
+          saveStatus: 'offline',
+          currentProject: {
+            id: projectId,
+            nodes: Array.isArray(draft?.nodes) ? draft.nodes : [],
+            edges: Array.isArray(draft?.edges) ? draft.edges : [],
+            history: draft?.history,
+            viewport: draft?.viewport as Viewport | undefined,
+          },
+        })
+        return draft
       }
     }
 
@@ -154,5 +199,58 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     saveTimer = null
     viewportTimer = null
     broadcastChannel = null
+  },
+
+  // Canvas.tsx-compatible adapter methods
+
+  getCurrentProject() {
+    return get().currentProject
+  },
+
+  saveCurrentProject(
+    nodes: unknown[],
+    edges: unknown[],
+    viewport: Viewport,
+    history?: unknown
+  ) {
+    const projectId = get().currentProjectId
+    if (!projectId) return
+
+    const draft: CanvasDraft = { nodes, edges, viewport, history }
+
+    // Update in-memory snapshot
+    const existing = get().currentProject
+    set({
+      currentProject: {
+        id: projectId,
+        name: existing?.name,
+        nodes,
+        edges,
+        history,
+        viewport,
+      },
+    })
+
+    get().save(draft)
+  },
+
+  saveCurrentProjectViewport(viewport: Viewport) {
+    const projectId = get().currentProjectId
+    if (!projectId) return
+
+    // Update in-memory snapshot viewport
+    const existing = get().currentProject
+    if (existing) {
+      set({ currentProject: { ...existing, viewport } })
+    }
+
+    get().saveViewport(viewport)
+  },
+
+  cancelPendingViewportPersist() {
+    if (viewportTimer) {
+      clearTimeout(viewportTimer)
+      viewportTimer = null
+    }
   },
 }))

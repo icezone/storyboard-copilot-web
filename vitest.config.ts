@@ -13,8 +13,9 @@ export default defineConfig({
       'src/**/*.test.ts',
       'src/**/*.test.tsx',
     ],
+    env: {},
     environmentMatchGlobs: [
-      ['__tests__/api/**', 'node'],
+      ['__tests__/api/**/*.test.ts', 'node'],
     ],
   },
   resolve: {

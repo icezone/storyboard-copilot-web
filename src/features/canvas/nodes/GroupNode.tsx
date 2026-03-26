@@ -1,0 +1,50 @@
+import { memo, useMemo } from 'react';
+import { LayoutGrid } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+
+import { NodeHeader, NODE_HEADER_FLOATING_POSITION_CLASS } from '@/features/canvas/ui/NodeHeader';
+import { NodeResizeHandle } from '@/features/canvas/ui/NodeResizeHandle';
+import { CANVAS_NODE_TYPES, type GroupNodeData } from '@/features/canvas/domain/canvasNodes';
+import { resolveNodeDisplayName } from '@/features/canvas/domain/nodeDisplay';
+import { useCanvasStore } from '@/stores/canvasStore';
+
+type GroupNodeProps = {
+  id: string;
+  data: GroupNodeData;
+  selected?: boolean;
+};
+
+export const GroupNode = memo(({ id, data, selected }: GroupNodeProps) => {
+  const { t } = useTranslation();
+  const updateNodeData = useCanvasStore((state) => state.updateNodeData);
+  const resolvedTitle = useMemo(
+    () => resolveNodeDisplayName(CANVAS_NODE_TYPES.group, data, t),
+    [data, t]
+  );
+
+  return (
+    <div
+      className={`group relative h-full w-full overflow-visible rounded-[var(--node-radius)] border-2 ${selected
+        ? 'border-accent shadow-[0_0_0_2px_rgba(59,130,246,0.35)]'
+        : 'border-[rgba(15,23,42,0.45)] hover:border-[rgba(15,23,42,0.58)] dark:border-[rgba(255,255,255,0.22)] dark:hover:border-[rgba(255,255,255,0.34)]'
+        }`}
+      style={{
+        backgroundColor: 'var(--group-node-bg)',
+      }}
+    >
+      <NodeHeader
+        className={NODE_HEADER_FLOATING_POSITION_CLASS}
+        icon={<LayoutGrid className="h-4 w-4" />}
+        titleText={resolvedTitle}
+        editable
+        onTitleChange={(nextTitle) => updateNodeData(id, {
+          displayName: nextTitle,
+          label: nextTitle,
+        })}
+      />
+      <NodeResizeHandle minWidth={220} minHeight={140} maxWidth={2200} maxHeight={1600} />
+    </div>
+  );
+});
+
+GroupNode.displayName = 'GroupNode';
