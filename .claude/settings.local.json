@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh auth:*)",
+      "Bash(gh repo:*)",
+      "Skill(update-config)",
+      "mcp__github__create_repository",
+      "Bash(git remote:*)",
+      "Bash(git branch:*)",
+      "Bash(git push:*)",
+      "Bash(cd:*)",
+      "Bash(D:/storyboard-copilot-web/CLAUDE.md:*)",
+      "Bash(mkdir -p D:/ws-project-persistence/supabase/migrations)",
+      "Bash(mkdir -p D:/ws-project-persistence/app/api/projects/[id]/draft/viewport)",
+      "Bash(mkdir -p D:/ws-project-persistence/__tests__/api)",
+      "Bash(mkdir -p D:/ws-project-persistence/__tests__/unit)",
+      "Bash(mkdir -p D:/ws-project-persistence/src/stores)",
+      "Bash(npm install:*)",
+      "Bash(ls D:/ws-project-persistence/vitest.config.*)",
+      "Bash(npx vitest:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run:*)",
+      "Bash(node -e \"const z = require\\(''zod''\\); console.log\\(typeof z.record, typeof z.object\\({a:z.number\\(\\)}\\).safeParse\\)\")",
+      "Bash(node -e \"const z = require\\(''zod''\\); const s = z.object\\({data: z.record\\(z.string\\(\\), z.unknown\\(\\)\\), expectedRevision: z.number\\(\\).int\\(\\).min\\(0\\)}\\); console.log\\(s.safeParse\\({data:{}, expectedRevision:5}\\)\\)\")",
+      "Bash(node -e \":*)",
+      "Bash(node -e \"console.log\\(require\\(''zod/package.json''\\).version\\)\")",
+      "Bash(gh pr:*)",
+      "Bash(node --input-type=module -e \":*)",
+      "Bash(git -C D:/storyboard-copilot-web worktree list)",
+      "Bash(git -C D:/storyboard-copilot-web log --oneline ws/auth-shell)"
+    ]
+  }
+}

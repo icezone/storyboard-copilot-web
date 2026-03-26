@@ -406,3 +406,112 @@ npm run release -- patch --notes-file docs/releases/vx.y.z.md
 ---
 
 如与用户明确要求冲突，以用户要求优先；如与运行时安全冲突，以安全优先。
+
+---
+
+# storyboard-copilot-web - 团队运营手册
+
+> 由 CCteam 自动生成，2026-03-25。
+> 此部分让 team-lead 的团队知识在上下文压缩后仍然保持。
+
+## Team-Lead 控制平面
+
+- team-lead = 主对话，不是生成的 agent
+- team-lead 负责用户对齐、范围控制、任务分解和阶段推进
+- team-lead 维护：`.plans/storyboard-copilot-web/task_plan.md`、`decisions.md` 和此 CLAUDE.md
+- **禁用独立子智能体**：团队存在后，所有工作通过 SendMessage 交给队友
+
+## 团队花名册
+
+| 名称 | 角色 | 模型 | worktree | 核心能力 |
+|------|------|------|----------|---------|
+| auth-dev | Phase 0 工作流 A | opus | D:/ws-auth-shell | Auth + App Shell + Middleware + i18n |
+| image-dev | Phase 0 工作流 F | opus | D:/ws-image-processing | sharp 图片处理 API |
+| db-dev | Phase 1 工作流 B | opus | D:/ws-project-persistence | DB Schema + 持久化 API |
+| canvas-dev | Phase 1 工作流 C | opus | D:/ws-canvas-nodes | 画布 + 节点（等 B.2+B.3） |
+| ai-dev | Phase 2 工作流 D | opus | D:/ws-ai-providers | 服务端 AI Provider（等 B.1） |
+| video-dev | Phase 2 工作流 E | opus | D:/ws-video-providers | 视频 Provider（等 D.1+D.3） |
+| reviewer | 代码审查 | opus | 主仓库 | 安全/质量/性能审查（只读代码） |
+
+## 并行策略
+
+```
+Wave 1（同时启动）: auth-dev + image-dev + db-dev
+Wave 2（B完成后）:  canvas-dev + ai-dev
+Wave 3（D完成后）:  video-dev
+```
+
+### 解锁条件
+- canvas-dev 解锁：db-dev 完成 B.2（项目CRUD API）+ B.3（草稿API）并报告 team-lead
+- ai-dev 解锁：db-dev 完成 B.1（含 005_ai_jobs.sql）并报告 team-lead
+- video-dev 解锁：ai-dev 完成 D.1+D.3（AI接口 + Job Service）并报告 team-lead
+
+## 任务下发协议
+
+### 大任务下发格式（必须包含）
+1. 范围和目标 + 验收标准
+2. "请创建 `task-<name>/` 任务文件夹（含 task_plan.md + findings.md + progress.md），并在根 findings.md 中添加索引"
+3. 依赖说明（关键文件路径）
+4. 审查预期：完成后是否需要 reviewer 审查
+
+### 通信速查
+| 操作 | 命令 |
+|------|------|
+| 给单个 agent 分配任务 | `SendMessage(to: "<名称>", message: "...")` |
+| dev 请求审查 | dev 直接联系 reviewer（不经 team-lead） |
+| 上报阻塞 | SendMessage(to: "team-lead", ...) |
+
+## 状态检查
+
+```bash
+# 快速扫描（并行读取）
+Read .plans/storyboard-copilot-web/auth-dev/progress.md
+Read .plans/storyboard-copilot-web/image-dev/progress.md
+Read .plans/storyboard-copilot-web/db-dev/progress.md
+
+# 深入了解
+Read .plans/storyboard-copilot-web/<agent>/findings.md
+
+# 全局方向
+Read .plans/storyboard-copilot-web/task_plan.md
+```
+
+读取顺序：**progress**（到哪了）→ **findings**（遇到什么）→ **task_plan**（目标是什么）
+
+## Harness 检查清单（阶段边界时执行）
+
+- **文档 harness**：CLAUDE.md + 主 task_plan.md 是否还准确？
+- **可观测性 harness**：Grep progress.md 搜索 "error|fail"
+- **不变量 harness**：Known Pitfalls 中是否有条目应升级为自动化测试？
+- **回放 harness**：本阶段是否产生了可复用的模式？用 [TEAM-PROTOCOL] 记录
+
+## CI 命令
+
+```bash
+npx tsc --noEmit          # 类型检查
+npx vitest run            # 单元测试
+npm run lint              # lint
+npm run build             # 完整构建（大改前）
+npx playwright test       # E2E（合并前）
+```
+
+## Known Pitfalls
+
+> Wave 1 启动时初始为空。识别到反复失败模式时追加。
+> 格式：症状、根因、修复、预防。
+
+### API 路由输入校验不完整（来自 image-dev 审查）
+- **症状**：非图片文件/越界参数/超量文件返回 500 而非 4xx
+- **根因**：Zod 只校验参数类型，未校验文件 MIME type、坐标边界、数组上限
+- **修复**：在 validation.ts 中增加 MIME type 白名单、crop 坐标边界检查、merge 文件数量上限（建议 ≤20）
+- **预防**：新增 API 路由时，除参数类型外还需校验：文件类型、数值范围、数组长度
+
+## 核心协议
+
+| 协议 | 触发时机 | 操作 |
+|------|---------|------|
+| 3-Strike 上报 | agent 3 次失败 | 读其 progress.md → 给新方向或重新分配 |
+| 代码审查 | 大功能完成 | dev → reviewer 直接沟通 |
+| 阶段解锁 | B.1/B.2+B.3/D.1+D.3 完成 | db-dev/ai-dev 通知 team-lead |
+| Wave 推进 | Wave N 完成 | 读各 agent findings → 更新主 task_plan.md → 启动 Wave N+1 |
+| 上下文溢出 | agent 报告上下文过长 | 进度已存文件，恢复或生成后继者 |

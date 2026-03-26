@@ -128,6 +128,8 @@ export async function GET(
     if (job.result) {
       const result = job.result as { url?: string }
       if (result.url) {
+        // Return output URL; imageUrl is kept for image jobs, videoUrl for video jobs
+        responseBody.imageUrl = result.url
         responseBody.outputUrl = result.url
       }
     }
