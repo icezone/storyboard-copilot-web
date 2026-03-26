@@ -12,11 +12,13 @@
     "@supabase/ssr": "^0.9.0",
     "@supabase/supabase-js": "^2.100.0",
     "@xyflow/react": "^12.10.1",
+    "@types/sharp": "^0.31.1",
     "i18next": "^25.10.9",
     "next": "16.2.1",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-i18next": "^16.6.6",
+    "sharp": "^0.34.5",
     "zod": "^4.3.6",
     "zustand": "^5.0.12"
   },
