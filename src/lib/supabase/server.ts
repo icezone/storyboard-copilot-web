@@ -1,11 +1,11 @@
-import { createServerClient } from '@supabase/ssr';
-import { SupabaseClient } from '@supabase/supabase-js';
+import { createServerClient as createSSRClient } from '@supabase/ssr';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 
 export async function createClient() {
   const cookieStore = await cookies();
 
-  return createServerClient(
+  return createSSRClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
@@ -27,6 +27,9 @@ export async function createClient() {
     }
   );
 }
+
+// Alias used by db-dev API routes
+export const createServerClient = createClient;
 
 export async function getAuthUser(supabase: SupabaseClient) {
   const { data: { user }, error } = await supabase.auth.getUser();

@@ -11,8 +11,8 @@
   "dependencies": {
     "@supabase/ssr": "^0.9.0",
     "@supabase/supabase-js": "^2.100.0",
-    "@xyflow/react": "^12.10.1",
     "@types/sharp": "^0.31.1",
+    "@xyflow/react": "^12.10.1",
     "i18next": "^25.10.9",
     "idb-keyval": "^6.2.2",
     "next": "16.2.1",
