@@ -14,8 +14,8 @@ const Canvas = dynamic(
 
 function CanvasLoading() {
   return (
-    <div className="flex h-full w-full items-center justify-center bg-bg-dark">
-      <div className="text-sm text-text-muted">Loading canvas...</div>
+    <div className="flex h-full w-full items-center justify-center bg-background">
+      <div className="text-sm text-foreground/40">Loading canvas...</div>
     </div>
   );
 }
@@ -24,14 +24,14 @@ function SaveStatusBadge() {
   const saveStatus = useProjectStore((state) => state.saveStatus);
 
   const statusMap = {
-    saving: { label: 'Saving...', className: 'text-text-muted' },
+    saving: { label: 'Saving...', className: 'text-foreground/40' },
     saved: { label: 'Saved', className: 'text-emerald-400' },
     unsynced: { label: 'Unsynced', className: 'text-amber-400' },
     offline: { label: 'Offline', className: 'text-red-400' },
     conflict: { label: 'Conflict', className: 'text-red-500' },
   } as const;
 
-  const { label, className } = statusMap[saveStatus] ?? { label: saveStatus, className: 'text-text-muted' };
+  const { label, className } = statusMap[saveStatus] ?? { label: saveStatus, className: 'text-foreground/40' };
 
   return (
     <span className={`pointer-events-none select-none text-xs ${className}`}>
@@ -75,10 +75,10 @@ export default function CanvasPage() {
   if (!projectId) {
     return (
       <div className="flex h-full w-full items-center justify-center">
-        <p className="text-sm text-text-muted">Invalid project ID.</p>
+        <p className="text-sm text-foreground/50">Invalid project ID.</p>
         <button
           type="button"
-          className="ml-3 text-sm text-accent underline"
+          className="ml-3 text-sm text-foreground underline"
           onClick={() => router.push('/')}
         >
           Go home
