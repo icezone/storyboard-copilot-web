@@ -5,6 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useAuthStore } from '@/stores/authStore';
 import { useTranslation } from 'react-i18next';
+import '@/i18n';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, loading, initialize, signOut } = useAuthStore();
