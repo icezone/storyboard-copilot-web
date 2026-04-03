@@ -32,25 +32,20 @@ test.describe('Auth flow', () => {
 
   test('shows validation error for invalid email', async ({ page }) => {
     await page.goto('/login')
-    await page.getByPlaceholder(/email/i).fill('not-an-email')
-    await page.getByPlaceholder(/password/i).fill('password123')
+    await page.locator('#email').fill('not-an-email')
+    await page.locator('#password').fill('password123')
     await page.getByRole('button', { name: /login|sign in|登录/i }).click()
     // Native HTML5 validation or custom error should trigger
-    const emailInput = page.getByPlaceholder(/email/i)
+    const emailInput = page.locator('#email')
     const validity = await emailInput.evaluate((el) => (el as HTMLInputElement).validity.valid)
     expect(validity).toBe(false)
   })
 
   test('shows error for password too short on signup', async ({ page }) => {
     await page.goto('/signup')
-    await page.getByPlaceholder(/email/i).fill('test@example.com')
-    // Fill all password fields with short password
-    const passwordInputs = page.getByPlaceholder(/password|••/i)
-    await passwordInputs.first().fill('abc')
-    const count = await passwordInputs.count()
-    if (count > 1) {
-      await passwordInputs.nth(1).fill('abc')
-    }
+    await page.locator('#email').fill('test@example.com')
+    await page.locator('#password').fill('abc')
+    await page.locator('#confirmPassword').fill('abc')
     await page.getByRole('button', { name: /sign up|create|注册/i }).click()
     const errorText = page.getByText(/6 char|too short|至少/i)
     await expect(errorText).toBeVisible({ timeout: 3000 })
