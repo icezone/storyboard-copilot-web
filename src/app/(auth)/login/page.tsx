@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
@@ -12,14 +13,19 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const { signIn, signInWithOAuth } = useAuthStore();
+  const router = useRouter();
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
     const { error } = await signIn(email, password);
-    if (error) setError(error.message);
-    setLoading(false);
+    if (error) {
+      setError(error.message);
+      setLoading(false);
+    } else {
+      router.push('/dashboard');
+    }
   };
 
   const handleGoogleLogin = async () => {
