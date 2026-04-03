@@ -65,7 +65,7 @@ function ProjectCard({ project, onOpen, onDelete, onRename }: ProjectCardProps) 
   }
 
   return (
-    <div className="group relative flex flex-col rounded-xl border border-foreground/10 bg-foreground/[0.03] p-4 transition-colors hover:border-foreground/20 hover:bg-foreground/[0.06]">
+    <div data-testid="project-card" className="group relative flex flex-col rounded-xl border border-foreground/10 bg-foreground/[0.03] p-4 transition-colors hover:border-foreground/20 hover:bg-foreground/[0.06]">
       {/* Thumbnail placeholder */}
       <div
         className="mb-3 flex h-32 cursor-pointer items-center justify-center rounded-lg bg-foreground/5"

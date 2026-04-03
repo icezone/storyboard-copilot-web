@@ -19,10 +19,11 @@ test.describe('Dashboard (authenticated)', () => {
 
   test('shows dashboard with project list', async ({ page }) => {
     await expect(page.getByRole('heading')).toBeVisible()
-    // Either shows projects or empty state
-    const hasProjects = await page.locator('[data-testid="project-card"]').count()
-    const hasEmpty = await page.getByText(/no projects|还没有项目/i).count()
-    expect(hasProjects + hasEmpty).toBeGreaterThan(0)
+    // Wait for API fetch to complete: either project cards or empty-state message
+    // .count() doesn't auto-wait, so use toBeVisible() on an .or() locator instead
+    const projectCard = page.locator('[data-testid="project-card"]')
+    const emptyMsg = page.getByText(/no projects|还没有项目/i)
+    await expect(projectCard.or(emptyMsg)).toBeVisible({ timeout: 10_000 })
   })
 
   test('can create a new project and navigate to canvas', async ({ page }) => {
