@@ -10,6 +10,7 @@ import {
 } from 'react';
 import {
   ReactFlow,
+  ReactFlowProvider,
   Background,
   MiniMap,
   BackgroundVariant,
@@ -234,6 +235,14 @@ interface PreviewConnectionLine {
 }
 
 export function Canvas() {
+  return (
+    <ReactFlowProvider>
+      <CanvasInner />
+    </ReactFlowProvider>
+  );
+}
+
+function CanvasInner() {
   const { t } = useTranslation();
   const reactFlowInstance = useReactFlow();
   const wrapperRef = useRef<HTMLDivElement>(null);
