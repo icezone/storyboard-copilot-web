@@ -10,6 +10,7 @@ export const CANVAS_NODE_TYPES = {
   storyboardGen: 'storyboardGenNode',
   videoGen: 'videoGenNode',
   videoResult: 'videoResultNode',
+  novelInput: 'novelInputNode',
 } as const;
 
 export type CanvasNodeType = (typeof CANVAS_NODE_TYPES)[keyof typeof CANVAS_NODE_TYPES];
@@ -162,6 +163,39 @@ export interface VideoGenNodeData extends NodeDisplayData {
   errorMessage?: string | null;
 }
 
+export interface NovelCharacter {
+  id: string;
+  name: string;
+  description: string;
+  aliases?: string[];
+}
+
+export interface NovelScene {
+  id: string;
+  order: number;
+  title: string;
+  summary: string;
+  visualPrompt: string;
+  characters: string[];
+  location: string;
+  mood: string;
+  timeOfDay?: string;
+  sourceTextRange?: { start: number; end: number };
+  selected: boolean;
+}
+
+export interface NovelInputNodeData extends NodeDisplayData {
+  text: string;
+  textLength: number;
+  language: 'auto' | 'zh' | 'en';
+  maxScenes: number;
+  sceneGranularity: 'coarse' | 'medium' | 'fine';
+  isAnalyzing: boolean;
+  errorMessage: string | null;
+  characters: NovelCharacter[];
+  scenes: NovelScene[];
+}
+
 export interface VideoResultNodeData extends NodeDisplayData {
   videoUrl: string;
   thumbnailUrl?: string | null;
@@ -185,7 +219,8 @@ export type CanvasNodeData =
   | StoryboardSplitNodeData
   | StoryboardGenNodeData
   | VideoGenNodeData
-  | VideoResultNodeData;
+  | VideoResultNodeData
+  | NovelInputNodeData;
 
 export type CanvasNode = Node<CanvasNodeData, CanvasNodeType>;
 export type CanvasEdge = Edge;
@@ -256,6 +291,12 @@ export function isStoryboardGenNode(
   node: CanvasNode | null | undefined
 ): node is Node<StoryboardGenNodeData, typeof CANVAS_NODE_TYPES.storyboardGen> {
   return node?.type === CANVAS_NODE_TYPES.storyboardGen;
+}
+
+export function isNovelInputNode(
+  node: CanvasNode | null | undefined
+): node is Node<NovelInputNodeData, typeof CANVAS_NODE_TYPES.novelInput> {
+  return node?.type === CANVAS_NODE_TYPES.novelInput;
 }
 
 export function isVideoGenNode(

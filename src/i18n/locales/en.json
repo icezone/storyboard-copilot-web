@@ -141,7 +141,8 @@
       "textAnnotation": "Text Annotation",
       "storyboard": "Storyboard",
       "storyboardGen": "Storyboard Gen",
-      "videoGeneration": "AI Video"
+      "videoGeneration": "AI Video",
+      "novelInput": "Novel/Script Input"
     },
     "upload": {
       "hint": "Click to upload or drag image here",
@@ -174,6 +175,29 @@
       "overallAspectRatio": "Overall Ratio",
       "ratioModeCell": "Cell",
       "ratioModeOverall": "Overall"
+    },
+    "novelInput": {
+      "placeholder": "Paste novel or script text...",
+      "charCount": "Chars: {{count}} / {{max}}",
+      "granularity": "Granularity",
+      "granularityCoarse": "Coarse",
+      "granularityMedium": "Medium",
+      "granularityFine": "Fine",
+      "language": "Language",
+      "languageAuto": "Auto Detect",
+      "languageZh": "Chinese",
+      "languageEn": "English",
+      "analyzeButton": "Smart Split",
+      "analyzing": "Analyzing...",
+      "characters": "Characters",
+      "scenes": "Scenes",
+      "batchGenerate": "Batch Generate Storyboards",
+      "batchGenerateCount": "Batch Generate Storyboards ({{count}})",
+      "noText": "Please enter text",
+      "textTooLong": "Text exceeds limit",
+      "analysisFailed": "Analysis failed",
+      "selectAll": "Select All",
+      "deselectAll": "Deselect All"
     },
     "videoGen": {
       "generate": "Generate Video",
@@ -242,7 +266,8 @@
     "videoResult": "Video Result",
     "storyboardGenOutput": "Storyboard Output",
     "storyboardSplitExport": "Split Export",
-    "storyboardFrameEdit": "Frame Edit"
+    "storyboardFrameEdit": "Frame Edit",
+    "novelInput": "Novel/Script Input"
   },
   "videoErrors": {
     "generation_failed": "Video generation failed",

@@ -18,6 +18,7 @@ export const DEFAULT_NODE_DISPLAY_NAME: Record<CanvasNodeType, string> = {
   [CANVAS_NODE_TYPES.storyboardGen]: '分镜生成',
   [CANVAS_NODE_TYPES.videoGen]: 'AI 视频',
   [CANVAS_NODE_TYPES.videoResult]: '视频结果',
+  [CANVAS_NODE_TYPES.novelInput]: '小说/剧本输入',
 };
 
 /** i18n key map for node display names. */
@@ -31,6 +32,7 @@ const NODE_DISPLAY_NAME_I18N_KEY: Record<CanvasNodeType, string> = {
   [CANVAS_NODE_TYPES.storyboardGen]: 'nodeDisplayName.storyboardGen',
   [CANVAS_NODE_TYPES.videoGen]: 'nodeDisplayName.videoGen',
   [CANVAS_NODE_TYPES.videoResult]: 'nodeDisplayName.videoResult',
+  [CANVAS_NODE_TYPES.novelInput]: 'nodeDisplayName.novelInput',
 };
 
 export const EXPORT_RESULT_DISPLAY_NAME: Record<ExportImageNodeResultKind, string> = {

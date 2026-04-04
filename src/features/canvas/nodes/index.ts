@@ -3,6 +3,7 @@ import type { NodeTypes } from '@xyflow/react';
 import { GroupNode } from './GroupNode';
 import { ImageEditNode } from './ImageEditNode';
 import { ImageNode } from './ImageNode';
+import { NovelInputNode } from './NovelInputNode';
 import { StoryboardGenNode } from './StoryboardGenNode';
 import { StoryboardNode } from './StoryboardNode';
 import { TextAnnotationNode } from './TextAnnotationNode';
@@ -14,6 +15,7 @@ export const nodeTypes: NodeTypes = {
   exportImageNode: ImageNode,
   groupNode: GroupNode,
   imageNode: ImageEditNode,
+  novelInputNode: NovelInputNode,
   storyboardGenNode: StoryboardGenNode,
   storyboardNode: StoryboardNode,
   textAnnotationNode: TextAnnotationNode,
@@ -22,4 +24,4 @@ export const nodeTypes: NodeTypes = {
   videoResultNode: VideoResultNode,
 };
 
-export { GroupNode, ImageEditNode, ImageNode, StoryboardGenNode, StoryboardNode, TextAnnotationNode, UploadNode, VideoGenNode, VideoResultNode };
+export { GroupNode, ImageEditNode, ImageNode, NovelInputNode, StoryboardGenNode, StoryboardNode, TextAnnotationNode, UploadNode, VideoGenNode, VideoResultNode };

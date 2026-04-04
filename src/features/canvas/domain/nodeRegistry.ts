@@ -8,6 +8,7 @@ import {
   type ExportImageNodeData,
   type GroupNodeData,
   type ImageEditNodeData,
+  type NovelInputNodeData,
   type StoryboardSplitNodeData,
   type StoryboardGenNodeData,
   type TextAnnotationNodeData,
@@ -313,6 +314,37 @@ const videoResultNodeDefinition: CanvasNodeDefinition<import('./canvasNodes').Vi
   }),
 };
 
+const novelInputNodeDefinition: CanvasNodeDefinition<NovelInputNodeData> = {
+  type: CANVAS_NODE_TYPES.novelInput,
+  menuLabelKey: 'node.menu.novelInput',
+  menuIcon: 'text',
+  visibleInMenu: true,
+  capabilities: {
+    toolbar: true,
+    promptInput: false,
+  },
+  connectivity: {
+    sourceHandle: true,
+    targetHandle: false,
+    connectMenu: {
+      fromSource: true,
+      fromTarget: false,
+    },
+  },
+  createDefaultData: () => ({
+    displayName: DEFAULT_NODE_DISPLAY_NAME[CANVAS_NODE_TYPES.novelInput],
+    text: '',
+    textLength: 0,
+    language: 'auto',
+    maxScenes: 20,
+    sceneGranularity: 'medium',
+    isAnalyzing: false,
+    errorMessage: null,
+    characters: [],
+    scenes: [],
+  }),
+};
+
 export const canvasNodeDefinitions: Record<CanvasNodeType, CanvasNodeDefinition> = {
   [CANVAS_NODE_TYPES.upload]: uploadNodeDefinition,
   [CANVAS_NODE_TYPES.imageEdit]: imageEditNodeDefinition,
@@ -323,6 +355,7 @@ export const canvasNodeDefinitions: Record<CanvasNodeType, CanvasNodeDefinition>
   [CANVAS_NODE_TYPES.storyboardGen]: storyboardGenNodeDefinition,
   [CANVAS_NODE_TYPES.videoGen]: videoGenNodeDefinition,
   [CANVAS_NODE_TYPES.videoResult]: videoResultNodeDefinition,
+  [CANVAS_NODE_TYPES.novelInput]: novelInputNodeDefinition,
 };
 
 export function getNodeDefinition(type: CanvasNodeType): CanvasNodeDefinition {

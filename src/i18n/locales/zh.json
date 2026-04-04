@@ -141,7 +141,8 @@
       "textAnnotation": "文字注释",
       "storyboard": "分镜",
       "storyboardGen": "分镜生成",
-      "videoGeneration": "AI 视频"
+      "videoGeneration": "AI 视频",
+      "novelInput": "小说/剧本输入"
     },
     "upload": {
       "hint": "点击上传或拖拽图片到此处",
@@ -174,6 +175,29 @@
       "overallAspectRatio": "整体比例",
       "ratioModeCell": "单帧",
       "ratioModeOverall": "整体"
+    },
+    "novelInput": {
+      "placeholder": "粘贴小说或剧本文本...",
+      "charCount": "字符: {{count}} / {{max}}",
+      "granularity": "拆分粒度",
+      "granularityCoarse": "粗略",
+      "granularityMedium": "中等",
+      "granularityFine": "精细",
+      "language": "语言",
+      "languageAuto": "自动检测",
+      "languageZh": "中文",
+      "languageEn": "英文",
+      "analyzeButton": "智能拆分",
+      "analyzing": "分析中...",
+      "characters": "角色表",
+      "scenes": "场景列表",
+      "batchGenerate": "批量生成分镜",
+      "batchGenerateCount": "批量生成分镜 ({{count}})",
+      "noText": "请输入文本",
+      "textTooLong": "文本超出限制",
+      "analysisFailed": "分析失败",
+      "selectAll": "全选",
+      "deselectAll": "取消全选"
     },
     "videoGen": {
       "generate": "生成视频",
@@ -242,7 +266,8 @@
     "videoResult": "视频结果",
     "storyboardGenOutput": "分镜输出",
     "storyboardSplitExport": "切割导出",
-    "storyboardFrameEdit": "分镜帧"
+    "storyboardFrameEdit": "分镜帧",
+    "novelInput": "小说/剧本输入"
   },
   "videoErrors": {
     "generation_failed": "视频生成失败",
