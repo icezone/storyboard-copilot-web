@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test'
 test.describe('Landing page', () => {
   test('renders hero section', async ({ page }) => {
     await page.goto('/')
-    await expect(page).toHaveTitle(/Storyboard/i)
+    await expect(page).toHaveTitle(/IceZone/i)
     // Hero heading should be visible
     const hero = page.locator('h1').first()
     await expect(hero).toBeVisible()
