@@ -1,6 +1,6 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { NodeToolbar as ReactFlowNodeToolbar } from '@xyflow/react';
-import { Copy, Crop, Download, FolderOpen, PenLine, RefreshCw, Scissors, Trash2, Unlink2 } from 'lucide-react';
+import { Copy, Crop, Download, FolderOpen, PenLine, RefreshCw, Scissors, Sparkles, Trash2, Unlink2 } from 'lucide-react';
 // Web version: Tauri save dialog replaced with browser download
 import { useTranslation } from 'react-i18next';
 
@@ -351,6 +351,23 @@ export const NodeActionToolbar = memo(({ node }: NodeActionToolbarProps) => {
           >
             <Copy className="h-3.5 w-3.5" />
             {t('nodeToolbar.copy')}
+          </UiChipButton>
+        )}
+        {!isImageEdit && canHandleImage && (
+          <UiChipButton
+            key="reverse-prompt"
+            className={`h-8 ${TOOLBAR_BUTTON_RADIUS_CLASS} px-2.5 text-xs ${TOOLBAR_NEUTRAL_BUTTON_CLASS}`}
+            onClick={() => {
+              if (imageSource) {
+                canvasEventBus.publish('reverse-prompt/open', {
+                  nodeId: node.id,
+                  imageUrl: imageSource,
+                });
+              }
+            }}
+          >
+            <Sparkles className="h-3.5 w-3.5" />
+            {t('nodeToolbar.reversePrompt')}
           </UiChipButton>
         )}
         {!isImageEdit && canCopyStoryboardText && (
