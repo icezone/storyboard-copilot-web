@@ -120,6 +120,10 @@ export interface CanvasEventMap {
     nodeId: string;
     file: File;
   };
+  'reverse-prompt/open': {
+    nodeId: string;
+    imageUrl: string;
+  };
 }
 
 export interface CanvasEventBus {
@@ -131,4 +135,39 @@ export interface CanvasEventBus {
     type: TType,
     handler: (payload: CanvasEventMap[TType]) => void
   ) => () => void;
+}
+
+/* ── N2: Reverse Prompt Generation ── */
+
+export type ReversePromptStyle = 'generic' | 'chinese';
+
+export interface ReversePromptPayload {
+  imageUrl: string;
+  style: ReversePromptStyle;
+  additionalContext?: string;
+}
+
+export interface ReversePromptResult {
+  prompt: string;
+  negativePrompt?: string;
+  tags?: string[];
+  confidence: number;
+}
+
+export interface ShotAnalysisPayload {
+  imageUrl: string;
+  additionalContext?: string;
+}
+
+export interface ShotAnalysisResult {
+  shotType: string;
+  cameraMovement: string;
+  lighting: string;
+  mood: string;
+  composition: string;
+}
+
+export interface LlmAnalysisGateway {
+  reversePrompt: (payload: ReversePromptPayload) => Promise<ReversePromptResult>;
+  analyzeShot: (payload: ShotAnalysisPayload) => Promise<ShotAnalysisResult>;
 }

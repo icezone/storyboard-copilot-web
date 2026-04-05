@@ -57,6 +57,7 @@ import { NodeSelectionMenu } from './NodeSelectionMenu';
 import { SelectedNodeOverlay } from './ui/SelectedNodeOverlay';
 import { MultiSelectToolbar } from './ui/MultiSelectToolbar';
 import { NodeToolDialog } from './ui/NodeToolDialog';
+import { ReversePromptDialog } from './ui/ReversePromptDialog';
 import { ImageViewerModal } from './ui/ImageViewerModal';
 import { CanvasSidebar } from './ui/CanvasSidebar';
 import { MissingApiKeyHint } from '@/features/settings/MissingApiKeyHint';
@@ -1835,6 +1836,7 @@ function CanvasInner() {
       )}
 
       <NodeToolDialog />
+      <ReversePromptDialog />
 
       <ImageViewerModal
         open={imageViewer.isOpen}

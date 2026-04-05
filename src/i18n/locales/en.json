@@ -141,7 +141,8 @@
     "copied": "Copied",
     "copyErrorReport": "Copy Error Report",
     "noDownloadPresetPathsHint": "Please set output path first",
-    "storyboardLine": "Add Storyboard Row"
+    "storyboardLine": "Add Storyboard Row",
+    "reversePrompt": "Reverse Prompt"
   },
   "node": {
     "menu": {
@@ -313,6 +314,23 @@
   "videoErrors": {
     "generation_failed": "Video generation failed",
     "job_timeout": "Generation job timed out"
+  },
+  "reversePrompt": {
+    "title": "Reverse Prompt Generation",
+    "outputStyle": "Output Style",
+    "styleGeneric": "Generic (English)",
+    "styleChinese": "Chinese",
+    "additionalContext": "Additional Context (optional)",
+    "contextPlaceholder": "Add background info or preferred description direction...",
+    "generate": "Generate Prompt",
+    "generating": "Generating...",
+    "resultPrompt": "Generated Prompt",
+    "negativePrompt": "Negative Prompt",
+    "tags": "Tags",
+    "copy": "Copy",
+    "fillDownstream": "Fill Downstream Nodes",
+    "filled": "Filled",
+    "imagePreview": "Image preview"
   },
   "ai": {
     "error": "AI generation error"

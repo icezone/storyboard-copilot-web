@@ -35,3 +35,28 @@ export interface LlmAnalysisRequest {
   userMessage: string
   temperature?: number
 }
+
+/** Types for reverse prompt generation (N2) */
+
+export type ReversePromptStyle = 'generic' | 'chinese'
+
+export interface ReversePromptParams {
+  imageUrl: string
+  style: ReversePromptStyle
+  additionalContext?: string
+}
+
+export interface ReversePromptResult {
+  prompt: string
+  negativePrompt?: string
+  tags?: string[]
+  confidence: number
+}
+
+/** Multimodal LLM request with optional image */
+export interface LlmMultimodalRequest {
+  systemPrompt: string
+  userMessage: string
+  imageUrl?: string
+  temperature?: number
+}

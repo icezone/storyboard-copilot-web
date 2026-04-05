@@ -141,7 +141,8 @@
     "copied": "已复制",
     "copyErrorReport": "复制错误报告",
     "noDownloadPresetPathsHint": "请先设置输出路径",
-    "storyboardLine": "添加分镜行"
+    "storyboardLine": "添加分镜行",
+    "reversePrompt": "反向提示词"
   },
   "node": {
     "menu": {
@@ -313,6 +314,23 @@
   "videoErrors": {
     "generation_failed": "视频生成失败",
     "job_timeout": "生成任务超时"
+  },
+  "reversePrompt": {
+    "title": "反向提示词生成",
+    "outputStyle": "输出风格",
+    "styleGeneric": "通用（英文）",
+    "styleChinese": "中文描述",
+    "additionalContext": "补充说明（可选）",
+    "contextPlaceholder": "补充图片背景信息或期望的描述方向...",
+    "generate": "生成提示词",
+    "generating": "生成中...",
+    "resultPrompt": "生成结果",
+    "negativePrompt": "反向提示词",
+    "tags": "标签",
+    "copy": "复制",
+    "fillDownstream": "填充到下游节点",
+    "filled": "已填充",
+    "imagePreview": "图片预览"
   },
   "ai": {
     "error": "AI 生成出错"
