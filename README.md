@@ -2,274 +2,435 @@
 
 # IceZone Studio
 
-### AI Creative Studio — Node-Based Canvas for Image & Video Generation
+### AI Creative Studio
 
 [![CI](https://github.com/icezone/icezone-studio/actions/workflows/ci.yml/badge.svg)](https://github.com/icezone/icezone-studio/actions)
-[![Next.js 15](https://img.shields.io/badge/Next.js-15-black?logo=next.js)](https://nextjs.org/)
-[![React 19](https://img.shields.io/badge/React-19-61dafb?logo=react)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript)](https://www.typescriptlang.org/)
-[![TailwindCSS 4](https://img.shields.io/badge/Tailwind-4-38bdf8?logo=tailwindcss)](https://tailwindcss.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 <p align="center">
-  <strong>A professional-grade Web SaaS platform for AI-powered image generation, video production, storyboard creation, and creative workflow management — all on an interactive node-based canvas.</strong>
+  <strong>Your all-in-one AI creative workspace for image generation, video production, and storyboard design.</strong>
 </p>
 
-[Live Demo](https://icezone.studio) · [Documentation](docs/) · [Changelog](CHANGELOG.md)
+**[English](#english)** | **[中文](#中文)**
+
+[Live Demo](https://icezone.studio) · [Changelog](CHANGELOG.md)
 
 </div>
 
 ---
 
-## Highlights
+<a id="english"></a>
 
-- **Node-Based Canvas** — Drag-and-drop creative workflow with 11 node types powered by [@xyflow/react](https://reactflow.dev/)
-- **Multi-Provider AI** — 7 image models (KIE, FAL, GRSAI, PPIO) + 5 video models (Kling, Sora2, VEO)
-- **AI Analysis Suite** — Video scene detection, reverse prompt generation, shot analysis, novel/script splitting
-- **BYOK (Bring Your Own Key)** — 6 provider slots with AES-256-GCM encrypted storage and automatic key rotation
-- **Real-Time Collaboration** — Supabase Postgres + IndexedDB dual-write with conflict detection
-- **Template Marketplace** — Official + user templates with community publish/share
-- **i18n Ready** — Full Chinese + English localization
+# English
 
----
+## What is IceZone Studio?
 
-## Tech Stack
+IceZone Studio is a **node-based AI creative platform** where you can visually connect different creative tasks — from uploading images, generating AI art, producing videos, to building complete storyboards — all in one interactive canvas.
 
-| Layer | Technology |
-|-------|-----------|
-| Framework | Next.js 15 (App Router) |
-| UI | React 19 + TailwindCSS 4 |
-| Canvas | @xyflow/react 12 |
-| State | Zustand 5 |
-| Language | TypeScript 5 |
-| Backend | Supabase (Auth + Postgres + Storage + Realtime) |
-| Image Processing | sharp |
-| Auth | Supabase Auth (Email + Google + WeChat OAuth) |
-| Testing | Vitest + Playwright |
-| CI/CD | GitHub Actions |
+Think of it as a visual creative workbench: each task is a "node" on the canvas, and you connect them together to build your creative pipeline. No coding required. Just drag, drop, connect, and create.
 
 ---
 
-## Node Types
+## Who is it for?
 
-| Node | Description |
-|------|------------|
-| **Upload** | Image upload and import |
-| **AI Image** | AI image generation & editing (7 models) |
-| **Export Image** | Generation/processing result export |
-| **Text Annotation** | Canvas text notes |
-| **Group** | Node grouping for workflow organization |
-| **Storyboard** | Storyboard grid splitting & export |
-| **Storyboard Gen** | AI storyboard generation + batch processing |
-| **AI Video** | Video generation (text/image-driven, 5 models) |
-| **Video Result** | Video result playback |
-| **Novel Input** | Novel/script text analysis & scene splitting |
-| **Video Analysis** | Video scene detection + keyframe extraction |
+- **Content Creators** — Generate and edit AI images, produce short videos, batch-create social media content
+- **Filmmakers & Animators** — Break down scripts into storyboards, analyze video shots, extract keyframes
+- **Writers & Storytellers** — Convert novels and scripts into visual storyboard sequences automatically
+- **Designers** — Crop, annotate, and process images with built-in tools, then feed them into AI generation
+- **Teams** — Share workflow templates with the community, collaborate on projects with real-time sync
 
 ---
 
-## AI Models
+## Key Features
 
-### Image Generation (7 Models / 4 Providers)
+### Canvas Workspace
 
-| Provider | Models | Features |
-|----------|--------|----------|
-| **KIE** | Default provider | Standard + Professional mode |
-| **FAL** | Multiple models | Fast generation |
-| **GRSAI** | Tiered quality | Multiple quality tiers |
-| **PPIO** | Extended models | Extended parameter support |
+The heart of IceZone Studio is the **interactive node canvas**. Everything you do happens on a flexible, zoomable workspace where you can:
 
-### Video Generation (5 Models / 3 Providers)
+- **Drag & drop** nodes to build creative workflows
+- **Connect nodes** to pass images, prompts, and results between steps
+- **Multi-select & group** nodes to organize complex projects
+- **Undo/redo** any action with full history tracking
+- **Auto-save** — your work is always safe, even if you close the browser
 
-| Provider | Models | Duration | Features |
-|----------|--------|----------|----------|
-| **Kling** | Kling 3.0 | 3s / 5s / 10s / 15s | Multi-shots, Elements |
-| **Sora2** | Sora 2 | 10s / 15s | Image-to-video |
-| **VEO** | VEO 3 / VEO 3 Fast | Variable | Audio support |
+### AI Image Generation
 
-### AI Analysis (4 Features)
+Create stunning images with **7 AI models** from 4 providers:
 
-| Feature | Description | Endpoint |
-|---------|------------|----------|
-| **Video Analysis** | Scene detection + keyframe extraction | `/api/video/analyze` |
-| **Reverse Prompt** | Image-to-prompt via Gemini Vision | `/api/ai/reverse-prompt` |
-| **Shot Analysis** | Professional shot/camera/lighting analysis | `/api/ai/shot-analysis` |
-| **Novel Splitting** | Text-to-scene splitting + character extraction | `/api/ai/novel-analyze` |
+- Choose your preferred model and provider
+- Set aspect ratio, quality, and style parameters
+- Use reference images to guide generation
+- View results instantly on the canvas
+- Supports both **Standard** and **Professional** modes
 
----
+### AI Video Generation
 
-## Quick Start
+Turn text descriptions or images into videos with **5 video models** from 3 providers:
 
-### Prerequisites
+- **Text-to-Video** — Describe a scene and watch it come to life
+- **Image-to-Video** — Animate a still image into a video clip
+- Duration options from **3 seconds to 15 seconds**
+- Multi-shot support for complex sequences
+- Audio generation support (select models)
 
-- Node.js >= 18
-- npm >= 9
-- Supabase account (for auth & storage)
+### AI Analysis Suite
 
-### Installation
+Let AI understand your creative content:
 
-```bash
-# Clone the repository
-git clone https://github.com/icezone/icezone-studio.git
-cd icezone-studio
+| Feature | What it does |
+|---------|-------------|
+| **Video Analysis** | Upload a video → automatically detect scenes and extract keyframes |
+| **Reverse Prompt** | Upload an image → AI generates the prompt that could recreate it |
+| **Shot Analysis** | Upload a frame → get professional analysis of camera angle, lighting, composition, and mood |
+| **Novel Splitting** | Paste a story → AI splits it into scenes with character extraction, ready for storyboarding |
 
-# Install dependencies
-npm install
+### Storyboard Creation
 
-# Set up environment variables
-cp .env.example .env.local
-# Edit .env.local with your Supabase and API keys
+Build professional storyboards with ease:
 
-# Start development server
-npm run dev
-```
+- **Grid Layout** — Configure rows, columns, and aspect ratios
+- **Batch Generation** — Generate all frames at once with AI
+- **Novel-to-Storyboard** — Paste your script, AI splits it into scenes, then batch-generate storyboard frames
+- **Video-to-Storyboard** — Extract keyframes from existing video and rebuild storyboards
+- **Export** — Download individual frames or complete storyboard sheets
 
-Open [http://localhost:3000](http://localhost:3000) to access IceZone Studio.
+### Built-in Image Tools
 
-### Environment Variables
+Process your images without leaving the canvas:
 
-```env
-# Supabase
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
-
-# AI Providers (optional — users can configure via BYOK)
-KIE_API_KEY=your_kie_key
-FAL_API_KEY=your_fal_key
-```
-
----
-
-## Development
-
-```bash
-# Development server
-npm run dev
-
-# Type checking
-npx tsc --noEmit
-
-# Unit tests
-npx vitest run
-
-# Lint
-npm run lint
-
-# Full build
-npm run build
-
-# E2E tests
-npx playwright test
-
-# Supabase local
-npx supabase start
-npx supabase db reset
-```
-
----
-
-## Architecture
-
-```
-src/
-├── app/                    # Next.js App Router pages & API routes
-│   ├── (app)/              # Authenticated app routes
-│   │   ├── canvas/[id]/    # Canvas editor page
-│   │   ├── dashboard/      # Project dashboard
-│   │   └── settings/       # User settings
-│   ├── api/                # 23+ API endpoints
-│   └── page.tsx            # Landing page
-├── features/
-│   ├── canvas/             # Core canvas engine
-│   │   ├── domain/         # Node types, registry, business rules
-│   │   ├── nodes/          # 11 node components
-│   │   ├── models/         # AI model definitions (image + video)
-│   │   ├── tools/          # Built-in tools (crop, annotate, split)
-│   │   ├── application/    # Ports & adapters, services
-│   │   ├── infrastructure/ # Web gateways & persistence
-│   │   └── ui/             # Overlays, toolbars, dialogs
-│   └── templates/          # Template system (library, serializer)
-├── server/
-│   ├── ai/                 # AI provider implementations
-│   ├── video/              # Video provider implementations
-│   └── image/              # sharp image processing
-├── stores/                 # Zustand state management
-├── components/ui/          # Shared UI primitives
-├── i18n/                   # Internationalization (zh + en)
-└── lib/supabase/           # Supabase client utilities
-```
-
----
-
-## Features Overview
-
-### Canvas & Workflow
-- Interactive node-based canvas with drag & drop
-- Multi-select with right-click box selection
-- Copy/paste, undo/redo, keyboard shortcuts
-- Node grouping and ungrouping
-- Auto-save with dual-write persistence (Supabase + IndexedDB)
-- Conflict detection with revision-based optimistic locking
-
-### Tools
-- **Crop** — Interactive image cropping
-- **Annotate** — Image annotation overlay
-- **Split Storyboard** — Grid-based storyboard splitting
+- **Crop** — Precisely trim images to any size
+- **Annotate** — Add text, markers, and highlights
+- **Split** — Divide storyboard sheets into individual frames
 
 ### Template System
-- 3 official workflow templates (Novel-to-Storyboard, Video Rebuild, Batch Image Gen)
-- Save/load custom templates
-- Community publish & share
-- JSON import/export
 
-### BYOK (Bring Your Own Key)
-- 6 providers: KIE, PPIO, GRSAI, FAL, OpenAI, Anthropic
-- AES-256-GCM encrypted key storage
-- Multi-key support with automatic rotation
-- Key status tracking (active, rate-limited, exhausted, invalid)
+Don't start from scratch — use templates:
 
-### Internationalization
-- Full Chinese and English support
-- Runtime language switching
-- i18next with namespace-based key organization
+- **3 official templates**: Novel-to-Storyboard, Video Rebuild, Batch Image Generation
+- **Save your own** workflows as reusable templates
+- **Share with the community** — publish templates for others to discover and use
+- **Import/Export** — share templates as JSON files
+
+### Bring Your Own Key (BYOK)
+
+Use your own API keys for maximum flexibility:
+
+- Support for **6 providers**: KIE, PPIO, GRSAI, FAL, OpenAI, Anthropic
+- Keys are **AES-256-GCM encrypted** — we never see your raw keys
+- Add **multiple keys per provider** with automatic rotation
+- Automatic failover when a key hits rate limits
+
+### Multi-Language Support
+
+IceZone Studio speaks your language:
+
+- Full **Chinese** and **English** interface
+- Switch languages anytime from settings
+- All UI elements, tooltips, and messages are localized
 
 ---
 
-## API Endpoints
+## Workflow Examples
 
-| Category | Endpoints | Description |
-|----------|-----------|-------------|
-| AI Generation | `/api/ai/generate`, `/api/ai/reverse-prompt`, `/api/ai/shot-analysis`, `/api/ai/novel-analyze` | Image generation & AI analysis |
-| Video | `/api/video/generate`, `/api/video/analyze` | Video generation & analysis |
-| Image Processing | `/api/image/split`, `/api/image/crop`, `/api/image/merge` | Server-side image tools |
-| Projects | `/api/projects/*` | Project CRUD & draft management |
-| Templates | `/api/templates/*` | Template CRUD & community sharing |
-| Assets | `/api/assets/*` | Media asset upload & management |
-| Settings | `/api/settings/*` | API key management (BYOK) |
-| Jobs | `/api/jobs/[id]` | Async task polling |
+### From Novel to Storyboard
+
+```
+Novel Input → AI Scene Splitting → Storyboard Gen (Batch) → Export
+```
+
+1. Paste your novel or script text into a **Novel Input** node
+2. Click **Smart Split** — AI breaks it into scenes with character descriptions
+3. Select scenes and click **Batch Generate Storyboards**
+4. AI generates visual frames for each scene
+5. Export the complete storyboard
+
+### Video Analysis & Rebuild
+
+```
+Video Analysis → Keyframe Extraction → AI Image Enhancement → Storyboard Export
+```
+
+1. Upload a video to a **Video Analysis** node
+2. AI detects scenes and extracts keyframes
+3. Export keyframes to the canvas as individual images
+4. Use **Reverse Prompt** or **Shot Analysis** to understand each frame
+5. Regenerate or enhance frames with AI
+
+### Batch Image Generation
+
+```
+AI Image Node × N → Group → Export
+```
+
+1. Add multiple **AI Image** nodes with different prompts
+2. Connect reference images for style consistency
+3. Generate all images in batch
+4. Group results and export
+
+---
+
+## Getting Started
+
+### 1. Visit [icezone.studio](https://icezone.studio)
+
+### 2. Create an account (Email or Google sign-in)
+
+### 3. Configure your API keys
+
+Go to **Settings → API Keys** and add your provider keys. You'll need at least one key to use AI features.
+
+### 4. Create a new project
+
+Click **New Project** from the dashboard to open your canvas workspace.
+
+### 5. Start creating!
+
+Double-click the canvas or use the left toolbar to add nodes. Connect them together and start your creative workflow.
+
+---
+
+## Self-Hosting
+
+For developers who want to run IceZone Studio locally:
+
+```bash
+git clone https://github.com/icezone/icezone-studio.git
+cd icezone-studio
+npm install
+cp .env.example .env.local
+# Fill in your Supabase credentials in .env.local
+npm run dev
+```
+
+Requires: Node.js >= 18, npm >= 9, and a [Supabase](https://supabase.com) project.
+
+---
+
+## Tech Overview
+
+Built with Next.js 15, React 19, TypeScript, Zustand, @xyflow/react, TailwindCSS 4, and Supabase. Full CI/CD with GitHub Actions. See [AGENTS.md](AGENTS.md) for architecture details.
 
 ---
 
 ## Contributing
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feat/amazing-feature`)
-3. Follow TDD workflow: write failing test → implement → refactor
-4. Ensure all checks pass: `npx tsc --noEmit && npx vitest run && npm run lint`
-5. Commit with conventional commits (`feat:`, `fix:`, `docs:`, etc.)
-6. Push to the branch and open a Pull Request
+We welcome contributions! Please follow the TDD workflow (write tests first), use conventional commits, and ensure all checks pass before submitting a PR.
 
 ---
 
 ## License
 
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+MIT License — see [LICENSE](LICENSE) for details.
+
+---
+
+---
+
+<a id="中文"></a>
+
+# 中文
+
+## IceZone Studio 是什么？
+
+IceZone Studio 是一个**基于节点画布的 AI 创作平台**，你可以在交互式画布上，通过连接不同的创作节点，完成从图片上传、AI 生图、视频制作到分镜设计的完整创意工作流。
+
+把它想象成一个可视化的创意工作台：每个任务都是画布上的一个"节点"，你把它们连接起来就能搭建自己的创作流水线。无需编程，拖拽、连接、创作，就是这么简单。
+
+---
+
+## 适合谁用？
+
+- **内容创作者** — AI 生成和编辑图片、制作短视频、批量创建社交媒体素材
+- **影视工作者** — 将剧本拆解为分镜、分析镜头画面、提取视频关键帧
+- **作家与编剧** — 将小说和剧本自动转化为可视化分镜序列
+- **设计师** — 使用内置工具裁剪、标注、处理图片，再接入 AI 生成
+- **团队协作** — 分享工作流模板到社区，项目实时同步协作
+
+---
+
+## 核心功能
+
+### 画布工作区
+
+IceZone Studio 的核心是**交互式节点画布**。所有操作都在一个灵活、可缩放的工作区中完成：
+
+- **拖拽放置** 节点，构建创意工作流
+- **连接节点**，在步骤之间传递图片、提示词和结果
+- **多选与编组**，组织复杂项目
+- **撤销/重做**，完整的操作历史
+- **自动保存** — 你的工作始终安全，即使关闭浏览器
+
+### AI 图片生成
+
+使用来自 4 个供应商的 **7 个 AI 模型**创作精彩图片：
+
+- 选择你喜欢的模型和供应商
+- 设置宽高比、质量和风格参数
+- 使用参考图引导生成方向
+- 在画布上即时查看结果
+- 支持**标准**和**专业**两种模式
+
+### AI 视频生成
+
+用文字描述或图片生成视频，来自 3 个供应商的 **5 个视频模型**：
+
+- **文字生视频** — 描述一个场景，观看它变成现实
+- **图片生视频** — 将静态图片转化为视频片段
+- 时长选项从 **3 秒到 15 秒**
+- 支持多镜头组合
+- 部分模型支持音频生成
+
+### AI 分析套件
+
+让 AI 理解你的创作内容：
+
+| 功能 | 说明 |
+|------|------|
+| **视频分析** | 上传视频 → 自动检测场景并提取关键帧 |
+| **反向提示词** | 上传图片 → AI 生成能重现该图片的提示词 |
+| **镜头分析** | 上传画面 → 获取专业的景别、运镜、灯光、构图和氛围分析 |
+| **小说拆分** | 粘贴故事文本 → AI 拆分为场景并提取角色，可直接生成分镜 |
+
+### 分镜创建
+
+轻松制作专业分镜：
+
+- **网格布局** — 配置行数、列数和宽高比
+- **批量生成** — 一次性用 AI 生成所有画面
+- **小说转分镜** — 粘贴剧本，AI 拆分场景，然后批量生成分镜画面
+- **视频转分镜** — 从现有视频提取关键帧重建分镜
+- **导出** — 下载单帧或完整分镜表
+
+### 内置图片工具
+
+无需离开画布即可处理图片：
+
+- **裁剪** — 精确裁切到任意尺寸
+- **标注** — 添加文字、标记和高亮
+- **分割** — 将分镜表拆分为独立画面
+
+### 模板系统
+
+不必从零开始 — 使用模板：
+
+- **3 个官方模板**：小说转分镜、视频重建、批量图片生成
+- **保存自己的** 工作流为可复用模板
+- **分享到社区** — 发布模板让其他人发现和使用
+- **导入/导出** — 以 JSON 文件分享模板
+
+### 自带密钥 (BYOK)
+
+使用自己的 API 密钥，获得最大灵活性：
+
+- 支持 **6 个供应商**：KIE、PPIO、GRSAI、FAL、OpenAI、Anthropic
+- 密钥采用 **AES-256-GCM 加密存储** — 我们永远看不到你的原始密钥
+- 每个供应商可添加**多个密钥**，自动轮换
+- 密钥触及限额时自动故障转移
+
+### 多语言支持
+
+IceZone Studio 说你的语言：
+
+- 完整的**中文**和**英文**界面
+- 随时在设置中切换语言
+- 所有界面元素、提示和消息均已本地化
+
+---
+
+## 工作流示例
+
+### 从小说到分镜
+
+```
+小说输入 → AI 场景拆分 → 分镜批量生成 → 导出
+```
+
+1. 将小说或剧本文本粘贴到**小说输入**节点
+2. 点击**智能拆分** — AI 将文本分解为场景并描述角色
+3. 选择场景，点击**批量生成分镜**
+4. AI 为每个场景生成视觉画面
+5. 导出完整的分镜
+
+### 视频分析与重建
+
+```
+视频分析 → 关键帧提取 → AI 图片增强 → 分镜导出
+```
+
+1. 将视频上传到**视频分析**节点
+2. AI 检测场景并提取关键帧
+3. 将关键帧导出到画布作为独立图片
+4. 使用**反向提示词**或**镜头分析**理解每一帧
+5. 用 AI 重新生成或增强画面
+
+### 批量图片生成
+
+```
+AI 图片节点 × N → 编组 → 导出
+```
+
+1. 添加多个**AI 图片**节点，填入不同提示词
+2. 连接参考图确保风格一致性
+3. 批量生成所有图片
+4. 编组结果并导出
+
+---
+
+## 快速开始
+
+### 1. 访问 [icezone.studio](https://icezone.studio)
+
+### 2. 注册账号（邮箱或 Google 登录）
+
+### 3. 配置你的 API 密钥
+
+前往 **设置 → API Keys**，添加你的供应商密钥。使用 AI 功能至少需要一个密钥。
+
+### 4. 创建新项目
+
+在控制台点击**新建项目**，打开画布工作区。
+
+### 5. 开始创作！
+
+双击画布或使用左侧工具栏添加节点，连接它们，开始你的创作流程。
+
+---
+
+## 本地部署
+
+如果你想在本地运行 IceZone Studio：
+
+```bash
+git clone https://github.com/icezone/icezone-studio.git
+cd icezone-studio
+npm install
+cp .env.example .env.local
+# 在 .env.local 中填入你的 Supabase 凭据
+npm run dev
+```
+
+需要：Node.js >= 18、npm >= 9，以及一个 [Supabase](https://supabase.com) 项目。
+
+---
+
+## 技术概览
+
+基于 Next.js 15、React 19、TypeScript、Zustand、@xyflow/react、TailwindCSS 4 和 Supabase 构建。完整的 GitHub Actions CI/CD。详见 [AGENTS.md](AGENTS.md) 了解架构细节。
+
+---
+
+## 参与贡献
+
+欢迎贡献代码！请遵循 TDD 工作流（先写测试）、使用约定式提交、确保所有检查通过后再提交 PR。
+
+---
+
+## 许可证
+
+MIT 许可证 — 详见 [LICENSE](LICENSE)。
 
 ---
 
 <div align="center">
-  <strong>Built with Next.js, React, and Supabase</strong>
-  <br/>
   <sub>IceZone Studio &copy; 2026</sub>
 </div>
