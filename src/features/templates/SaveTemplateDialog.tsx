@@ -7,7 +7,7 @@ import { X } from 'lucide-react';
 interface SaveTemplateDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (data: { name: string; description: string; tags: string[] }) => Promise<void>;
+  onSave: (data: { name: string; description: string; tags: string[]; isPublic: boolean }) => Promise<void>;
 }
 
 export function SaveTemplateDialog({ isOpen, onClose, onSave }: SaveTemplateDialogProps) {
@@ -16,6 +16,7 @@ export function SaveTemplateDialog({ isOpen, onClose, onSave }: SaveTemplateDial
   const [description, setDescription] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
+  const [isPublic, setIsPublic] = useState(false);
   const [saving, setSaving] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -38,15 +39,16 @@ export function SaveTemplateDialog({ isOpen, onClose, onSave }: SaveTemplateDial
     if (!name.trim()) return;
     setSaving(true);
     try {
-      await onSave({ name: name.trim(), description: description.trim(), tags });
+      await onSave({ name: name.trim(), description: description.trim(), tags, isPublic });
       setName('');
       setDescription('');
       setTags([]);
+      setIsPublic(false);
       onClose();
     } finally {
       setSaving(false);
     }
-  }, [name, description, tags, onSave, onClose]);
+  }, [name, description, tags, isPublic, onSave, onClose]);
 
   if (!isOpen) return null;
 
@@ -124,6 +126,22 @@ export function SaveTemplateDialog({ isOpen, onClose, onSave }: SaveTemplateDial
             className="w-full rounded-lg border border-foreground/15 bg-foreground/[0.04] px-3 py-2 text-sm text-foreground outline-none focus:border-foreground/30"
           />
         </div>
+
+        {/* Visibility */}
+        <label className="mb-4 flex items-center gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={isPublic}
+            onChange={(e) => setIsPublic(e.target.checked)}
+            className="h-4 w-4 rounded border-foreground/15 bg-foreground/[0.04] text-accent focus:ring-accent focus:ring-offset-0"
+          />
+          <span className="text-sm text-foreground/70">
+            {t('template.makePublic')}
+          </span>
+          <span className="text-xs text-foreground/40">
+            ({t('template.makePublicHint')})
+          </span>
+        </label>
 
         {/* Actions */}
         <div className="flex justify-end gap-3">

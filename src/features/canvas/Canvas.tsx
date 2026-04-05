@@ -62,7 +62,6 @@ import { ImageViewerModal } from './ui/ImageViewerModal';
 import { CanvasSidebar } from './ui/CanvasSidebar';
 import { MissingApiKeyHint } from '@/features/settings/MissingApiKeyHint';
 import { TemplateLibrary } from '@/features/templates/TemplateLibrary';
-import { SaveTemplateDialog } from '@/features/templates/SaveTemplateDialog';
 import { serializeCanvasToTemplate, deserializeTemplateToCanvas } from './application/templateSerializer';
 import type { WorkflowTemplate } from '@/features/templates/types';
 
@@ -272,7 +271,6 @@ function CanvasInner() {
 
   // Template state
   const [showTemplateLibrary, setShowTemplateLibrary] = useState(false);
-  const [showSaveTemplateDialog, setShowSaveTemplateDialog] = useState(false);
 
   const isRestoringCanvasRef = useRef(true);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -1722,11 +1720,7 @@ function CanvasInner() {
     setShowTemplateLibrary(true);
   }, []);
 
-  const handleOpenSaveTemplate = useCallback(() => {
-    setShowSaveTemplateDialog(true);
-  }, []);
-
-  const handleSaveTemplate = useCallback(async (data: { name: string; description: string; tags: string[] }) => {
+  const handleSaveTemplate = useCallback(async (data: { name: string; description: string; tags: string[]; isPublic: boolean }) => {
     const templateData = serializeCanvasToTemplate(nodes, edges, {
       name: data.name,
       description: data.description,
@@ -1739,12 +1733,13 @@ function CanvasInner() {
         name: data.name,
         description: data.description,
         tags: data.tags,
+        isPublic: data.isPublic,
         templateData,
       }),
     });
 
-    if (res.ok) {
-      setShowSaveTemplateDialog(false);
+    if (!res.ok) {
+      throw new Error('Failed to save template');
     }
   }, [nodes, edges]);
 
@@ -1818,7 +1813,6 @@ function CanvasInner() {
         onToggleLock={toggleLock}
         onAddNode={handleSidebarAddNode}
         onOpenTemplates={handleOpenTemplates}
-        onSaveTemplate={handleOpenSaveTemplate}
       />
       <div
         ref={wrapperRef}
@@ -1957,14 +1951,9 @@ function CanvasInner() {
         isOpen={showTemplateLibrary}
         onClose={() => setShowTemplateLibrary(false)}
         onUseTemplate={handleUseTemplate}
+        onSaveTemplate={handleSaveTemplate}
         onImportJson={handleImportJson}
         onExportJson={handleExportJson}
-      />
-
-      <SaveTemplateDialog
-        isOpen={showSaveTemplateDialog}
-        onClose={() => setShowSaveTemplateDialog(false)}
-        onSave={handleSaveTemplate}
       />
       </div>
     </div>

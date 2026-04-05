@@ -28,6 +28,7 @@ export const createTemplateSchema = z.object({
   description: z.string().max(2000).optional().default(''),
   tags: z.array(z.string().max(50)).max(20).optional().default([]),
   thumbnailUrl: z.string().url().optional(),
+  isPublic: z.boolean().optional().default(false),
   templateData: z.object({
     version: z.number().int().positive(),
     nodes: z.array(z.object({}).passthrough()),

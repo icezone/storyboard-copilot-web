@@ -61,7 +61,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   }
 
-  const { name, description, tags, thumbnailUrl, templateData } = parsed.data
+  const { name, description, tags, thumbnailUrl, isPublic, templateData } = parsed.data
 
   const { data, error } = await supabase
     .from('workflow_templates')
@@ -73,7 +73,8 @@ export async function POST(request: Request) {
       thumbnail_url: thumbnailUrl,
       template_data: templateData,
       node_count: templateData.nodes.length,
-      category: 'custom',
+      category: isPublic ? 'shared' : 'custom',
+      is_public: isPublic,
     })
     .select('id, name, category, created_at')
     .single()

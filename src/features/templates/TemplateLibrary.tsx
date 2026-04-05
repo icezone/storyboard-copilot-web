@@ -2,9 +2,10 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { X, Upload, Download } from 'lucide-react';
+import { X, Upload, Download, Plus } from 'lucide-react';
 import { TemplateCard } from './TemplateCard';
 import { PublishTemplateDialog } from './PublishTemplateDialog';
+import { SaveTemplateDialog } from './SaveTemplateDialog';
 import type { WorkflowTemplate } from './types';
 
 type TabKey = 'official' | 'custom' | 'shared';
@@ -13,6 +14,7 @@ interface TemplateLibraryProps {
   isOpen: boolean;
   onClose: () => void;
   onUseTemplate: (template: WorkflowTemplate) => void;
+  onSaveTemplate: (data: { name: string; description: string; tags: string[]; isPublic: boolean }) => Promise<void>;
   onImportJson: () => void;
   onExportJson: () => void;
 }
@@ -21,6 +23,7 @@ export function TemplateLibrary({
   isOpen,
   onClose,
   onUseTemplate,
+  onSaveTemplate,
   onImportJson,
   onExportJson,
 }: TemplateLibraryProps) {
@@ -30,6 +33,7 @@ export function TemplateLibrary({
   const [loading, setLoading] = useState(false);
   const [sort, setSort] = useState<'newest' | 'popular'>('newest');
   const [publishTarget, setPublishTarget] = useState<WorkflowTemplate | null>(null);
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
 
   const fetchTemplates = useCallback(async () => {
     setLoading(true);
@@ -87,6 +91,12 @@ export function TemplateLibrary({
     }
   }, [fetchTemplates]);
 
+  const handleSaveTemplateWrapper = useCallback(async (data: { name: string; description: string; tags: string[]; isPublic: boolean }) => {
+    await onSaveTemplate(data);
+    setShowSaveDialog(false);
+    await fetchTemplates();
+  }, [onSaveTemplate, fetchTemplates]);
+
   if (!isOpen) return null;
 
   const tabs: { key: TabKey; label: string }[] = [
@@ -112,6 +122,16 @@ export function TemplateLibrary({
               {t('template.templateLibrary')}
             </h2>
             <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setShowSaveDialog(true)}
+                title={t('template.saveAsTemplate')}
+                className="flex h-8 items-center gap-1.5 rounded-lg bg-accent px-3 text-sm font-medium text-white hover:bg-accent/90 transition-colors"
+              >
+                <Plus className="h-4 w-4" />
+                {t('template.newTemplate')}
+              </button>
+              <div className="h-4 w-px bg-foreground/10" />
               <button
                 type="button"
                 onClick={onImportJson}
@@ -220,6 +240,13 @@ export function TemplateLibrary({
         template={publishTarget}
         onClose={() => setPublishTarget(null)}
         onPublish={handlePublish}
+      />
+
+      {/* Save template dialog */}
+      <SaveTemplateDialog
+        isOpen={showSaveDialog}
+        onClose={() => setShowSaveDialog(false)}
+        onSave={handleSaveTemplateWrapper}
       />
     </>
   );
