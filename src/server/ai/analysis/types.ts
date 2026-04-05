@@ -53,10 +53,41 @@ export interface ReversePromptResult {
   confidence: number
 }
 
-/** Multimodal LLM request with optional image */
+/** Multimodal LLM request with optional image (N2) */
 export interface LlmMultimodalRequest {
   systemPrompt: string
   userMessage: string
   imageUrl?: string
+  temperature?: number
+}
+
+/** Types for shot analysis (N3) */
+
+export interface ShotAnalysisParams {
+  imageUrl: string
+  additionalFrameUrls?: string[]
+  language: 'zh' | 'en'
+}
+
+export interface ShotAnalysisResult {
+  shotType: string
+  shotTypeConfidence: number
+  cameraMovement: string
+  movementDescription: string
+  subject: string
+  subjectAction: string
+  lightingType: string
+  lightingMood: string
+  colorPalette: string[]
+  mood: string
+  composition: string
+  directorNote: string
+}
+
+/** Vision analysis request with multiple images (N3) */
+export interface LlmVisionAnalysisRequest {
+  systemPrompt: string
+  imageUrls: string[]
+  userMessage: string
   temperature?: number
 }

@@ -32,16 +32,17 @@ export class WebLlmAnalysisGateway implements LlmAnalysisGateway {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         imageUrl: payload.imageUrl,
-        additionalContext: payload.additionalContext,
+        additionalFrameUrls: payload.additionalFrameUrls,
+        language: payload.language,
       }),
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ error: `Request failed: ${response.status}` }));
-      throw new Error((errorData as { error?: string }).error || `Shot analysis failed: ${response.status}`);
+      const errorData = await response.json().catch(() => ({ error: 'Shot analysis failed' }));
+      throw new Error(errorData.error || `Shot analysis failed (${response.status})`);
     }
 
-    return response.json() as Promise<ShotAnalysisResult>;
+    return response.json();
   }
 }
 
