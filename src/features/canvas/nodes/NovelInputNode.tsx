@@ -16,7 +16,7 @@ import { NodeResizeHandle } from '@/features/canvas/ui/NodeResizeHandle';
 import { NODE_CONTROL_PRIMARY_BUTTON_CLASS } from '@/features/canvas/ui/nodeControlStyles';
 import { batchGenerateStoryboards } from '@/features/canvas/application/novelToStoryboard';
 import { UiButton } from '@/components/ui';
-import { useCanvasStore } from '@/stores/canvasStore';
+import { useCanvasStore, type CanvasStore } from '@/stores/canvasStore';
 
 type NovelInputNodeProps = NodeProps & {
   id: string;
@@ -178,8 +178,8 @@ function NovelInputNodeComponent({
   const handleBatchGenerate = useCallback(() => {
     if (selectedCount === 0) return;
 
-    const store = { nodes, addNode, addEdge };
-    batchGenerateStoryboards(id, data.scenes, store as any);
+    const store = { nodes, addNode, addEdge } as unknown as CanvasStore;
+    batchGenerateStoryboards(id, data.scenes, store);
   }, [id, data.scenes, selectedCount, nodes, addNode, addEdge]);
 
   const granularityLabel = (g: string) => {

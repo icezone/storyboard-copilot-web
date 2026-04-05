@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { NovelScene } from '@/features/canvas/domain/canvasNodes';
 import { batchGenerateStoryboards } from '@/features/canvas/application/novelToStoryboard';
+import type { CanvasStore } from '@/stores/canvasStore';
 
 describe('batchGenerateStoryboards', () => {
   const mockAddNode = vi.fn().mockReturnValue('new-node-id');
@@ -19,7 +20,7 @@ describe('batchGenerateStoryboards', () => {
     nodes: baseNodes,
     addNode: mockAddNode,
     addEdge: mockAddEdge,
-  };
+  } as unknown as CanvasStore;
 
   const sampleScenes: NovelScene[] = [
     {
@@ -64,7 +65,7 @@ describe('batchGenerateStoryboards', () => {
   });
 
   it('creates storyboardGenNode for each selected scene', () => {
-    batchGenerateStoryboards('novel-1', sampleScenes, mockCanvasStore as any);
+    batchGenerateStoryboards('novel-1', sampleScenes, mockCanvasStore);
 
     // Only 2 scenes are selected (s1 and s3)
     expect(mockAddNode).toHaveBeenCalledTimes(2);
@@ -85,7 +86,7 @@ describe('batchGenerateStoryboards', () => {
   });
 
   it('creates edge connections from novel node to each storyboard node', () => {
-    batchGenerateStoryboards('novel-1', sampleScenes, mockCanvasStore as any);
+    batchGenerateStoryboards('novel-1', sampleScenes, mockCanvasStore);
 
     // 2 edges for 2 selected scenes
     expect(mockAddEdge).toHaveBeenCalledTimes(2);
@@ -98,7 +99,7 @@ describe('batchGenerateStoryboards', () => {
   });
 
   it('positions new nodes in a vertical stack from source', () => {
-    batchGenerateStoryboards('novel-1', sampleScenes, mockCanvasStore as any);
+    batchGenerateStoryboards('novel-1', sampleScenes, mockCanvasStore);
 
     const firstPos = mockAddNode.mock.calls[0][1];
     const secondPos = mockAddNode.mock.calls[1][1];
@@ -113,7 +114,7 @@ describe('batchGenerateStoryboards', () => {
   });
 
   it('fills visualPrompt into frame descriptions', () => {
-    batchGenerateStoryboards('novel-1', sampleScenes, mockCanvasStore as any);
+    batchGenerateStoryboards('novel-1', sampleScenes, mockCanvasStore);
 
     // Check that the frames contain the visual prompt as description
     const firstData = mockAddNode.mock.calls[0][2];
@@ -128,9 +129,9 @@ describe('batchGenerateStoryboards', () => {
     const storeWithoutNode = {
       ...mockCanvasStore,
       nodes: [],
-    };
+    } as unknown as CanvasStore;
 
-    batchGenerateStoryboards('nonexistent', sampleScenes, storeWithoutNode as any);
+    batchGenerateStoryboards('nonexistent', sampleScenes, storeWithoutNode);
 
     expect(mockAddNode).not.toHaveBeenCalled();
     expect(mockAddEdge).not.toHaveBeenCalled();
@@ -138,7 +139,7 @@ describe('batchGenerateStoryboards', () => {
 
   it('does nothing when no scenes are selected', () => {
     const noSelectedScenes = sampleScenes.map((s) => ({ ...s, selected: false }));
-    batchGenerateStoryboards('novel-1', noSelectedScenes, mockCanvasStore as any);
+    batchGenerateStoryboards('novel-1', noSelectedScenes, mockCanvasStore);
 
     expect(mockAddNode).not.toHaveBeenCalled();
     expect(mockAddEdge).not.toHaveBeenCalled();
