@@ -3,18 +3,28 @@ import { test, expect } from '@playwright/test'
 /**
  * E2E tests for Wave 0 + Wave 1 features
  * Tests video analysis, LLM analysis, novel input, templates, and key rotation
+ *
+ * These tests require authentication. They are skipped when
+ * E2E_TEST_EMAIL / E2E_TEST_PASSWORD environment variables are not set.
  */
 
-test.describe.skip('Wave 0: Video & LLM Analysis Features', () => {
-  test.beforeEach(async ({ page }) => {
-    // Login
-    await page.goto('/login')
-    await page.fill('input[type="email"]', 'test@example.com')
-    await page.fill('input[type="password"]', 'testpassword123')
-    await page.click('button[type="submit"]')
+const hasAuth = !!(process.env.E2E_TEST_EMAIL && process.env.E2E_TEST_PASSWORD)
+const email = process.env.E2E_TEST_EMAIL ?? ''
+const password = process.env.E2E_TEST_PASSWORD ?? ''
 
-    // Wait for redirect to dashboard
-    await page.waitForURL('/dashboard', { timeout: 10000 })
+async function login(page: import('@playwright/test').Page) {
+  await page.goto('/login')
+  await page.fill('input[type="email"]', email)
+  await page.fill('input[type="password"]', password)
+  await page.click('button[type="submit"]')
+  await page.waitForURL('/dashboard', { timeout: 15000 })
+}
+
+test.describe('Wave 0: Video & LLM Analysis Features', () => {
+  test.skip(!hasAuth, 'Skipped: E2E_TEST_EMAIL / E2E_TEST_PASSWORD not configured')
+
+  test.beforeEach(async ({ page }) => {
+    await login(page)
   })
 
   test('N1: Video Analysis Node - can be added to canvas', async ({ page }) => {
@@ -106,12 +116,10 @@ test.describe.skip('Wave 0: Video & LLM Analysis Features', () => {
 })
 
 test.describe('Wave 1: Template & Enhancement Features', () => {
+  test.skip(!hasAuth, 'Skipped: E2E_TEST_EMAIL / E2E_TEST_PASSWORD not configured')
+
   test.beforeEach(async ({ page }) => {
-    await page.goto('/login')
-    await page.fill('input[type="email"]', 'test@example.com')
-    await page.fill('input[type="password"]', 'testpassword123')
-    await page.click('button[type="submit"]')
-    await page.waitForURL('/dashboard', { timeout: 10000 })
+    await login(page)
   })
 
   test('N5: Template System - template button exists in canvas', async ({ page }) => {
@@ -161,12 +169,10 @@ test.describe('Wave 1: Template & Enhancement Features', () => {
 })
 
 test.describe('Integration: Full Workflow', () => {
+  test.skip(!hasAuth, 'Skipped: E2E_TEST_EMAIL / E2E_TEST_PASSWORD not configured')
+
   test.beforeEach(async ({ page }) => {
-    await page.goto('/login')
-    await page.fill('input[type="email"]', 'test@example.com')
-    await page.fill('input[type="password"]', 'testpassword123')
-    await page.click('button[type="submit"]')
-    await page.waitForURL('/dashboard', { timeout: 10000 })
+    await login(page)
   })
 
   test('Can create project, add multiple node types, and navigate', async ({ page }) => {
