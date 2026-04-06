@@ -317,6 +317,14 @@ npm run release -- patch --notes-file docs/releases/vx.y.z.md
 - 发布说明优先落到 `docs/releases/vx.y.z.md`，再通过 `npm run release` 或"推送更新"口令触发发布。
 - `docs/releases/vx.y.z.md` 的默认格式同样只保留二级标题分组和列表正文，不写额外总标题、范围说明和完整提交清单。
 
+### 7.4 CHANGELOG 同步规则
+
+- **每次合并 PR 到 main 时，必须同步更新 `CHANGELOG.md`。**
+- 在 `[Unreleased]` 区块下追加本次变更条目，按 `Added` / `Changed` / `Fixed` / `Removed` 分组。
+- 条目格式：一句话描述变更，不带 commit hash 或 PR 编号。
+- 正式发布时，将 `[Unreleased]` 内容移到新版本号标题下，清空 `[Unreleased]`。
+- CHANGELOG 采用双语格式（English + 中文），两个语言区块都需要同步更新。
+
 ## 8. 性能实践
 
 - 禁止在拖拽每一帧执行重持久化或重计算。
