@@ -52,7 +52,13 @@
     "createError": "Failed to create project",
     "loadError": "Failed to load projects",
     "renameProject": "Rename",
-    "newProjectName": "New project name"
+    "newProjectName": "New project name",
+    "justNow": "just now",
+    "startCreating": "Start Creating",
+    "browseAllTemplates": "Browse all templates",
+    "communityTitle": "Community Templates",
+    "communityDesc": "Explore creative workflow templates shared by the community",
+    "exploreCommunity": "Explore Community"
   },
   "nav": {
     "myProjects": "My Projects",
