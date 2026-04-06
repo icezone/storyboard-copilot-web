@@ -30,7 +30,14 @@ test.describe('Dashboard (authenticated)', () => {
     await page.getByRole('button', { name: /new project|新建项目/i }).click()
     // Should navigate to canvas after creation
     await page.waitForURL('**/canvas/**', { timeout: 10_000 })
-    expect(page.url()).toContain('/canvas/')
+    const url = page.url()
+    expect(url).toContain('/canvas/')
+
+    // Cleanup: delete the project created by this test
+    const projectId = url.split('/canvas/')[1]?.split(/[?#]/)[0]
+    if (projectId) {
+      await page.request.delete(`/api/projects/${projectId}`)
+    }
   })
 
   test('sidebar has navigation links', async ({ page }) => {

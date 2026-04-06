@@ -20,12 +20,21 @@ async function login(page: import('@playwright/test').Page) {
   await page.waitForURL('/dashboard', { timeout: 15000 })
 }
 
-/** Create a new project from dashboard and wait for canvas to load */
-async function createProject(page: import('@playwright/test').Page) {
+/** Create a new project from dashboard and wait for canvas to load. Returns the project ID. */
+async function createProject(page: import('@playwright/test').Page): Promise<string> {
   await page.click('button:has-text("新建项目")')
   await page.waitForURL(/\/canvas\//, { timeout: 15000 })
   // Wait for canvas to be ready
   await page.waitForSelector('[data-testid="add-node-button"]', { timeout: 10000 })
+  const projectId = page.url().split('/canvas/')[1]?.split(/[?#]/)[0] ?? ''
+  return projectId
+}
+
+/** Delete a project via API */
+async function deleteProject(page: import('@playwright/test').Page, projectId: string) {
+  if (projectId) {
+    await page.request.delete(`/api/projects/${projectId}`)
+  }
 }
 
 /** Open the add-node menu */
@@ -43,74 +52,90 @@ test.describe('Wave 0: Video & LLM Analysis Features', () => {
   })
 
   test('N1: Video Analysis Node - can be added to canvas', async ({ page }) => {
-    await createProject(page)
-    await openNodeMenu(page)
+    const projectId = await createProject(page)
+    try {
+      await openNodeMenu(page)
 
-    // Check if Video Analysis option exists
-    const videoAnalysisOption = page.locator('text=视频分析')
-    await expect(videoAnalysisOption).toBeVisible({ timeout: 5000 })
+      // Check if Video Analysis option exists
+      const videoAnalysisOption = page.locator('text=视频分析')
+      await expect(videoAnalysisOption).toBeVisible({ timeout: 5000 })
 
-    // Add video analysis node
-    await videoAnalysisOption.click()
+      // Add video analysis node
+      await videoAnalysisOption.click()
 
-    // Verify node appears
-    const videoAnalysisNode = page.locator('[data-testid="node-videoAnalysis"]').first()
-    await expect(videoAnalysisNode).toBeVisible({ timeout: 5000 })
+      // Verify node appears
+      const videoAnalysisNode = page.locator('[data-testid="node-videoAnalysis"]').first()
+      await expect(videoAnalysisNode).toBeVisible({ timeout: 5000 })
 
-    // Check node has expected controls
-    await expect(videoAnalysisNode.locator('text=灵敏度')).toBeVisible()
-    await expect(videoAnalysisNode.locator('text=开始分析')).toBeVisible()
+      // Check node has expected controls
+      await expect(videoAnalysisNode.locator('text=灵敏度')).toBeVisible()
+      await expect(videoAnalysisNode.locator('text=开始分析')).toBeVisible()
+    } finally {
+      await deleteProject(page, projectId)
+    }
   })
 
   test('N2: Reverse Prompt - toolbar button appears on image nodes', async ({ page }) => {
-    await createProject(page)
-    await openNodeMenu(page)
-    await page.locator('text=上传图片').click()
+    const projectId = await createProject(page)
+    try {
+      await openNodeMenu(page)
+      await page.locator('text=上传图片').click()
 
-    // Select the node
-    const uploadNode = page.locator('[data-testid="node-upload"]').first()
-    await expect(uploadNode).toBeVisible({ timeout: 5000 })
-    await uploadNode.click()
+      // Select the node
+      const uploadNode = page.locator('[data-testid="node-upload"]').first()
+      await expect(uploadNode).toBeVisible({ timeout: 5000 })
+      await uploadNode.click()
 
-    // Check for reverse prompt button in toolbar
-    const reversePromptButton = page.locator('[data-testid="node-action-reverse-prompt"]')
-    await expect(reversePromptButton).toBeDefined()
+      // Check for reverse prompt button in toolbar
+      const reversePromptButton = page.locator('[data-testid="node-action-reverse-prompt"]')
+      await expect(reversePromptButton).toBeDefined()
+    } finally {
+      await deleteProject(page, projectId)
+    }
   })
 
   test('N3: Shot Analysis - toolbar button registered', async ({ page }) => {
-    await createProject(page)
-    await openNodeMenu(page)
-    await page.locator('text=上传图片').click()
+    const projectId = await createProject(page)
+    try {
+      await openNodeMenu(page)
+      await page.locator('text=上传图片').click()
 
-    const uploadNode = page.locator('[data-testid="node-upload"]').first()
-    await expect(uploadNode).toBeVisible({ timeout: 5000 })
-    await uploadNode.click()
+      const uploadNode = page.locator('[data-testid="node-upload"]').first()
+      await expect(uploadNode).toBeVisible({ timeout: 5000 })
+      await uploadNode.click()
 
-    const shotAnalysisButton = page.locator('[data-testid="node-action-shot-analysis"]')
-    await expect(shotAnalysisButton).toBeDefined()
+      const shotAnalysisButton = page.locator('[data-testid="node-action-shot-analysis"]')
+      await expect(shotAnalysisButton).toBeDefined()
+    } finally {
+      await deleteProject(page, projectId)
+    }
   })
 
   test('N4: Novel Input Node - can be added and accepts text', async ({ page }) => {
-    await createProject(page)
-    await openNodeMenu(page)
+    const projectId = await createProject(page)
+    try {
+      await openNodeMenu(page)
 
-    const novelOption = page.locator('text=小说/剧本输入')
-    await expect(novelOption).toBeVisible({ timeout: 5000 })
-    await novelOption.click()
+      const novelOption = page.locator('text=小说/剧本输入')
+      await expect(novelOption).toBeVisible({ timeout: 5000 })
+      await novelOption.click()
 
-    // Verify node appears
-    const novelNode = page.locator('[data-testid="node-novelInput"]').first()
-    await expect(novelNode).toBeVisible({ timeout: 5000 })
+      // Verify node appears
+      const novelNode = page.locator('[data-testid="node-novelInput"]').first()
+      await expect(novelNode).toBeVisible({ timeout: 5000 })
 
-    // Check for text area
-    const textarea = novelNode.locator('textarea')
-    await expect(textarea).toBeVisible()
+      // Check for text area
+      const textarea = novelNode.locator('textarea')
+      await expect(textarea).toBeVisible()
 
-    // Type some text
-    await textarea.fill('这是一个测试小说片段。')
+      // Type some text
+      await textarea.fill('这是一个测试小说片段。')
 
-    // Check for analyze button
-    await expect(novelNode.locator('button:has-text("智能拆分")')).toBeVisible()
+      // Check for analyze button
+      await expect(novelNode.locator('button:has-text("智能拆分")')).toBeVisible()
+    } finally {
+      await deleteProject(page, projectId)
+    }
   })
 })
 
@@ -122,11 +147,14 @@ test.describe('Wave 1: Template & Enhancement Features', () => {
   })
 
   test('N5: Template System - template button exists in canvas', async ({ page }) => {
-    await createProject(page)
-
-    // Check for template button in sidebar/toolbar
-    const templateButton = page.locator('button[title*="模板"], button:has-text("模板")')
-    await expect(templateButton.first()).toBeVisible({ timeout: 10000 })
+    const projectId = await createProject(page)
+    try {
+      // Check for template button in sidebar/toolbar
+      const templateButton = page.locator('button[title*="模板"], button:has-text("模板")')
+      await expect(templateButton.first()).toBeVisible({ timeout: 10000 })
+    } finally {
+      await deleteProject(page, projectId)
+    }
   })
 
   test('N5: Template System - can open template library from dashboard', async ({ page }) => {
@@ -136,16 +164,20 @@ test.describe('Wave 1: Template & Enhancement Features', () => {
   })
 
   test('N7: Storyboard Enhancement - batch generate button exists', async ({ page }) => {
-    await createProject(page)
-    await openNodeMenu(page)
-    await page.locator('text=分镜生成').click()
+    const projectId = await createProject(page)
+    try {
+      await openNodeMenu(page)
+      await page.locator('text=分镜生成').click()
 
-    const storyboardNode = page.locator('[data-testid="node-storyboardGen"]').first()
-    await expect(storyboardNode).toBeVisible({ timeout: 5000 })
+      const storyboardNode = page.locator('[data-testid="node-storyboardGen"]').first()
+      await expect(storyboardNode).toBeVisible({ timeout: 5000 })
 
-    // Check for batch generate button (Zap icon or text)
-    const batchButton = storyboardNode.locator('button:has-text("批量生成"), button[title*="批量"]')
-    await expect(batchButton.first()).toBeVisible()
+      // Check for batch generate button (Zap icon or text)
+      const batchButton = storyboardNode.locator('button:has-text("批量生成"), button[title*="批量"]')
+      await expect(batchButton.first()).toBeVisible()
+    } finally {
+      await deleteProject(page, projectId)
+    }
   })
 
   test('N8: API Key Rotation - settings page has multi-key support', async ({ page }) => {
@@ -170,33 +202,37 @@ test.describe('Integration: Full Workflow', () => {
   })
 
   test('Can create project, add multiple node types, and navigate', async ({ page }) => {
-    await createProject(page)
-    await openNodeMenu(page)
+    const projectId = await createProject(page)
+    try {
+      await openNodeMenu(page)
 
-    // Check all new node types are available
-    const nodeTypes = [
-      '视频分析',
-      '小说/剧本输入',
-      '分镜生成',
-      '上传图片'
-    ]
+      // Check all new node types are available
+      const nodeTypes = [
+        '视频分析',
+        '小说/剧本输入',
+        '分镜生成',
+        '上传图片'
+      ]
 
-    for (const nodeType of nodeTypes) {
-      const option = page.locator(`text=${nodeType}`)
-      await expect(option).toBeVisible({ timeout: 2000 })
+      for (const nodeType of nodeTypes) {
+        const option = page.locator(`text=${nodeType}`)
+        await expect(option).toBeVisible({ timeout: 2000 })
+      }
+
+      // Add one node to verify functionality
+      await page.locator('text=上传图片').click()
+      const uploadNode = page.locator('[data-testid="node-upload"]').first()
+      await expect(uploadNode).toBeVisible({ timeout: 5000 })
+
+      // Return to dashboard via sidebar back button (zh: "返回主页", en: "Back to Dashboard")
+      await page.click('button[title="返回主页"], button[title="Back to Dashboard"]')
+      await page.waitForURL('/dashboard', { timeout: 10000 })
+
+      // Verify project appears in list
+      const projectCard = page.locator('[data-testid="project-card"]').first()
+      await expect(projectCard).toBeVisible({ timeout: 5000 })
+    } finally {
+      await deleteProject(page, projectId)
     }
-
-    // Add one node to verify functionality
-    await page.locator('text=上传图片').click()
-    const uploadNode = page.locator('[data-testid="node-upload"]').first()
-    await expect(uploadNode).toBeVisible({ timeout: 5000 })
-
-    // Return to dashboard via sidebar back button (zh: "返回主页", en: "Back to Dashboard")
-    await page.click('button[title="返回主页"], button[title="Back to Dashboard"]')
-    await page.waitForURL('/dashboard', { timeout: 10000 })
-
-    // Verify project appears in list
-    const projectCard = page.locator('[data-testid="project-card"]').first()
-    await expect(projectCard).toBeVisible({ timeout: 5000 })
   })
 })
