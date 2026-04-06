@@ -17,6 +17,7 @@ interface TemplateLibraryProps {
   onSaveTemplate: (data: { name: string; description: string; tags: string[]; isPublic: boolean }) => Promise<void>;
   onImportJson: () => void;
   onExportJson: () => void;
+  defaultTab?: TabKey;
 }
 
 export function TemplateLibrary({
@@ -26,9 +27,18 @@ export function TemplateLibrary({
   onSaveTemplate,
   onImportJson,
   onExportJson,
+  defaultTab,
 }: TemplateLibraryProps) {
   const { t } = useTranslation();
-  const [tab, setTab] = useState<TabKey>('official');
+  const [tab, setTab] = useState<TabKey>(defaultTab ?? 'official');
+
+  // Sync tab and sort when defaultTab changes externally (e.g. from dashboard buttons)
+  useEffect(() => {
+    if (defaultTab && isOpen) {
+      setTab(defaultTab);
+      if (defaultTab === 'shared') setSort('popular');
+    }
+  }, [defaultTab, isOpen]);
   const [templates, setTemplates] = useState<WorkflowTemplate[]>([]);
   const [loading, setLoading] = useState(false);
   const [sort, setSort] = useState<'newest' | 'popular'>('newest');

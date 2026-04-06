@@ -5,10 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import {
   Plus,
-  MoreVertical,
   Pencil,
   Trash2,
-  FolderOpen,
   BookOpen,
   Film,
   Images,
@@ -18,6 +16,8 @@ import {
   Clock,
   Layers,
 } from 'lucide-react';
+import { TemplateLibrary } from '@/features/templates/TemplateLibrary';
+import type { WorkflowTemplate } from '@/features/templates/types';
 
 export const dynamic = 'force-dynamic';
 
@@ -169,7 +169,7 @@ function TemplateShortcut({ icon, lucideIcon, title, description, onClick, accen
   );
 }
 
-// ---------- Project Card ----------
+// ---------- Project Card (compact, 6 per row) ----------
 
 interface ProjectCardProps {
   project: Project;
@@ -180,23 +180,11 @@ interface ProjectCardProps {
 
 function ProjectCard({ project, onOpen, onDelete, onRename }: ProjectCardProps) {
   const { t } = useTranslation();
-  const [menuOpen, setMenuOpen] = useState(false);
   const [renaming, setRenaming] = useState(false);
   const [nameValue, setNameValue] = useState(project.name);
-  const menuRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [gradFrom, gradTo] = useMemo(() => projectGradient(project.id), [project.id]);
-
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setMenuOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   useEffect(() => {
     if (renaming && inputRef.current) {
@@ -216,104 +204,69 @@ function ProjectCard({ project, onOpen, onDelete, onRename }: ProjectCardProps) 
   return (
     <div
       data-testid="project-card"
-      className="group relative flex flex-col overflow-hidden rounded-xl border border-foreground/10 bg-foreground/[0.04] transition-all hover:border-foreground/20 hover:bg-foreground/[0.07] hover:shadow-lg hover:shadow-black/10"
+      className="group relative flex flex-col overflow-hidden rounded-lg border border-foreground/10 bg-foreground/[0.04] transition-all hover:border-foreground/20 hover:bg-foreground/[0.07]"
     >
-      {/* Thumbnail — gradient with project initial */}
+      {/* Thumbnail — gradient with project initial, click to open */}
       <div
-        className="relative flex h-36 cursor-pointer items-center justify-center"
+        className="relative flex h-24 cursor-pointer items-center justify-center"
         onClick={onOpen}
       >
         <div
-          className="absolute inset-0 opacity-25 transition-opacity group-hover:opacity-35"
-          style={{
-            background: `linear-gradient(135deg, ${gradFrom}, ${gradTo})`,
-          }}
+          className="absolute inset-0 opacity-20 transition-opacity group-hover:opacity-30"
+          style={{ background: `linear-gradient(135deg, ${gradFrom}, ${gradTo})` }}
         />
-        {/* Project initial large */}
         <span
-          className="relative text-4xl font-bold opacity-30 transition-opacity group-hover:opacity-50"
+          className="relative text-2xl font-bold opacity-30 transition-opacity group-hover:opacity-50"
           style={{ color: gradFrom }}
         >
           {project.name.charAt(0).toUpperCase()}
         </span>
-        {/* Decorative node dots */}
-        <div className="absolute bottom-3 left-3 flex gap-1.5">
-          <div className="h-2 w-2 rounded-full" style={{ background: gradFrom, opacity: 0.4 }} />
-          <div className="h-2 w-2 rounded-full" style={{ background: gradTo, opacity: 0.3 }} />
-          <div className="h-2 w-2 rounded-full" style={{ background: gradFrom, opacity: 0.2 }} />
+
+        {/* Hover action buttons on thumbnail */}
+        <div className="absolute right-1.5 top-1.5 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+          <button
+            type="button"
+            title={t('dashboard.renameProject')}
+            onClick={(e) => { e.stopPropagation(); setRenaming(true); }}
+            className="flex h-6 w-6 items-center justify-center rounded bg-black/50 text-white/70 backdrop-blur-sm hover:bg-black/70 hover:text-white"
+          >
+            <Pencil className="h-3 w-3" />
+          </button>
+          <button
+            type="button"
+            title={t('dashboard.deleteProject')}
+            onClick={(e) => { e.stopPropagation(); onDelete(); }}
+            className="flex h-6 w-6 items-center justify-center rounded bg-black/50 text-red-400/80 backdrop-blur-sm hover:bg-red-600/80 hover:text-white"
+          >
+            <Trash2 className="h-3 w-3" />
+          </button>
         </div>
       </div>
 
       {/* Info area */}
-      <div className="flex flex-col gap-1 px-3.5 pb-3.5 pt-3">
-        {/* Name row */}
-        <div className="flex items-center justify-between gap-2">
-          {renaming ? (
-            <input
-              ref={inputRef}
-              className="flex-1 rounded border border-foreground/20 bg-background px-2 py-0.5 text-sm text-foreground outline-none"
-              value={nameValue}
-              onChange={(e) => setNameValue(e.target.value)}
-              onBlur={handleRenameSubmit}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') handleRenameSubmit();
-                if (e.key === 'Escape') { setNameValue(project.name); setRenaming(false); }
-              }}
-            />
-          ) : (
-            <span
-              className="flex-1 cursor-pointer truncate text-sm font-medium text-foreground"
-              onClick={onOpen}
-            >
-              {project.name}
-            </span>
-          )}
-
-          {/* Context menu */}
-          <div ref={menuRef} className="relative">
-            <button
-              className="flex h-6 w-6 items-center justify-center rounded text-foreground/30 opacity-0 transition-all group-hover:opacity-100 hover:bg-foreground/10 hover:text-foreground/70"
-              onClick={() => setMenuOpen((v) => !v)}
-              type="button"
-            >
-              <MoreVertical className="h-3.5 w-3.5" />
-            </button>
-
-            {menuOpen && (
-              <div className="absolute right-0 top-7 z-10 min-w-[140px] rounded-lg border border-foreground/10 bg-background py-1 shadow-xl">
-                <button
-                  className="flex w-full items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-foreground/5"
-                  onClick={() => { setMenuOpen(false); onOpen(); }}
-                  type="button"
-                >
-                  <FolderOpen className="h-3.5 w-3.5 text-foreground/50" />
-                  {t('dashboard.openCanvas')}
-                </button>
-                <button
-                  className="flex w-full items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-foreground/5"
-                  onClick={() => { setMenuOpen(false); setRenaming(true); }}
-                  type="button"
-                >
-                  <Pencil className="h-3.5 w-3.5 text-foreground/50" />
-                  {t('dashboard.renameProject')}
-                </button>
-                <div className="my-1 border-t border-foreground/10" />
-                <button
-                  className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-500 hover:bg-red-500/10"
-                  onClick={() => { setMenuOpen(false); onDelete(); }}
-                  type="button"
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                  {t('dashboard.deleteProject')}
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Timestamp */}
-        <div className="flex items-center gap-1 text-xs text-foreground/35">
-          <Clock className="h-3 w-3" />
+      <div className="flex flex-col gap-0.5 px-2.5 pb-2.5 pt-2">
+        {renaming ? (
+          <input
+            ref={inputRef}
+            className="w-full rounded border border-foreground/20 bg-background px-1.5 py-0.5 text-xs text-foreground outline-none"
+            value={nameValue}
+            onChange={(e) => setNameValue(e.target.value)}
+            onBlur={handleRenameSubmit}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleRenameSubmit();
+              if (e.key === 'Escape') { setNameValue(project.name); setRenaming(false); }
+            }}
+          />
+        ) : (
+          <span
+            className="cursor-pointer truncate text-xs font-medium text-foreground"
+            onClick={onOpen}
+          >
+            {project.name}
+          </span>
+        )}
+        <div className="flex items-center gap-1 text-[10px] text-foreground/35">
+          <Clock className="h-2.5 w-2.5" />
           <span>{formatRelativeTime(project.updated_at, t)}</span>
         </div>
       </div>
@@ -331,6 +284,8 @@ export default function DashboardPage() {
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Project | null>(null);
+  const [templateLibraryOpen, setTemplateLibraryOpen] = useState(false);
+  const [templateLibraryTab, setTemplateLibraryTab] = useState<'official' | 'shared'>('official');
 
   const loadProjects = useCallback(async () => {
     try {
@@ -375,6 +330,24 @@ export default function DashboardPage() {
   async function handleCreateFromTemplate(_templateKey: string) {
     await handleCreate();
   }
+
+  function openTemplateLibrary(tab: 'official' | 'shared') {
+    setTemplateLibraryTab(tab);
+    setTemplateLibraryOpen(true);
+  }
+
+  const handleUseTemplate = useCallback((_template: WorkflowTemplate) => {
+    // Close library and create a new project (template loading handled in canvas)
+    setTemplateLibraryOpen(false);
+    void handleCreate();
+  }, []);
+
+  const handleSaveTemplate = useCallback(async () => {
+    // No-op from dashboard — save is only meaningful in canvas
+  }, []);
+
+  const handleImportJson = useCallback(() => {}, []);
+  const handleExportJson = useCallback(() => {}, []);
 
   async function handleRename(project: Project, newName: string) {
     const res = await fetch(`/api/projects/${project.id}`, {
@@ -439,7 +412,7 @@ export default function DashboardPage() {
               </div>
               <button
                 type="button"
-                onClick={() => void handleCreateFromTemplate('blank')}
+                onClick={() => openTemplateLibrary('official')}
                 className="flex items-center gap-1.5 rounded-lg text-sm text-foreground/50 transition-colors hover:text-foreground/80"
               >
                 {t('dashboard.browseAllTemplates')}
@@ -477,7 +450,7 @@ export default function DashboardPage() {
               </div>
               <button
                 type="button"
-                onClick={() => void handleCreateFromTemplate('community')}
+                onClick={() => openTemplateLibrary('shared')}
                 className="flex items-center gap-1.5 rounded-lg border border-foreground/10 bg-foreground/[0.04] px-3.5 py-1.5 text-xs font-medium text-foreground/60 transition-colors hover:border-foreground/20 hover:text-foreground"
               >
                 {t('dashboard.exploreCommunity')}
@@ -539,7 +512,7 @@ export default function DashboardPage() {
 
             {/* Project grid */}
             {projects.length > 0 && (
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+              <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6">
                 {projects.map((project) => (
                   <ProjectCard
                     key={project.id}
@@ -584,6 +557,17 @@ export default function DashboardPage() {
           </div>
         </div>
       )}
+
+      {/* Template Library Modal */}
+      <TemplateLibrary
+        isOpen={templateLibraryOpen}
+        onClose={() => setTemplateLibraryOpen(false)}
+        onUseTemplate={handleUseTemplate}
+        onSaveTemplate={handleSaveTemplate}
+        onImportJson={handleImportJson}
+        onExportJson={handleExportJson}
+        defaultTab={templateLibraryTab}
+      />
     </div>
   );
 }

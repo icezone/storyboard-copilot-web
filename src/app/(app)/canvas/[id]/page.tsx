@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useState, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { useTranslation } from 'react-i18next';
@@ -26,8 +26,39 @@ function CanvasTopBar() {
   const { t } = useTranslation();
   const saveStatus = useProjectStore((state) => state.saveStatus);
   const currentProject = useProjectStore((state) => state.currentProject);
+  const patchProjectName = useProjectStore((state) => state.patchProjectName);
+  const currentProjectId = useProjectStore((state) => state.currentProjectId);
 
   const projectName = currentProject?.name || t('canvas.untitledProject');
+
+  const [editing, setEditing] = useState(false);
+  const [nameValue, setNameValue] = useState(projectName);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Sync nameValue when project name changes externally
+  useEffect(() => {
+    if (!editing) setNameValue(projectName);
+  }, [projectName, editing]);
+
+  useEffect(() => {
+    if (editing && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [editing]);
+
+  async function handleRenameSubmit() {
+    const trimmed = nameValue.trim();
+    if (trimmed && trimmed !== projectName && currentProjectId) {
+      patchProjectName(trimmed);
+      await fetch(`/api/projects/${currentProjectId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: trimmed }),
+      });
+    }
+    setEditing(false);
+  }
 
   const statusMap = {
     saving:   { label: t('canvas.saveStatus.saving'),   className: 'text-white/40' },
@@ -41,11 +72,35 @@ function CanvasTopBar() {
 
   return (
     <div className="pointer-events-none absolute left-0 right-0 top-0 z-[50] flex items-center justify-between px-4 py-3">
-      {/* Project name — centred visually by sitting left of save status */}
-      <div className="flex items-center gap-2 pl-14">
-        <span className="max-w-[260px] truncate text-sm font-medium text-white/70">
-          {projectName}
-        </span>
+      {/* Project name — click to rename */}
+      <div className="pointer-events-auto flex items-center gap-2 pl-14">
+        {editing ? (
+          <input
+            ref={inputRef}
+            className="max-w-[260px] rounded border border-white/20 bg-white/10 px-2 py-0.5 text-sm font-medium text-white/90 outline-none backdrop-blur-sm"
+            value={nameValue}
+            onChange={(e) => setNameValue(e.target.value)}
+            onBlur={() => void handleRenameSubmit()}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') void handleRenameSubmit();
+              if (e.key === 'Escape') { setNameValue(projectName); setEditing(false); }
+            }}
+          />
+        ) : (
+          <button
+            type="button"
+            onClick={() => setEditing(true)}
+            title={t('dashboard.renameProject')}
+            className="group flex max-w-[260px] items-center gap-1.5 rounded px-1 py-0.5 transition-colors hover:bg-white/10"
+          >
+            <span className="truncate text-sm font-medium text-white/70 group-hover:text-white/90">
+              {projectName}
+            </span>
+            <svg viewBox="0 0 16 16" fill="currentColor" className="h-3 w-3 flex-shrink-0 text-white/30 group-hover:text-white/60">
+              <path d="M11.013 1.427a1.75 1.75 0 0 1 2.474 0l1.086 1.086a1.75 1.75 0 0 1 0 2.474l-8.61 8.61c-.21.21-.47.364-.756.445l-3.251.93a.75.75 0 0 1-.927-.928l.929-3.25c.081-.286.235-.547.445-.758l8.61-8.61Zm1.414 1.06a.25.25 0 0 0-.354 0L3.464 11.1l-.626 2.188 2.188-.626 8.61-8.61a.25.25 0 0 0 0-.354l-1.086-1.086-.123-.085Z" />
+            </svg>
+          </button>
+        )}
       </div>
 
       {/* Save status */}
