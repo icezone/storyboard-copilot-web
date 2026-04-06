@@ -52,7 +52,13 @@
     "createError": "创建项目失败",
     "loadError": "加载项目失败",
     "renameProject": "重命名",
-    "newProjectName": "新项目名称"
+    "newProjectName": "新项目名称",
+    "justNow": "刚刚",
+    "startCreating": "开始创作",
+    "browseAllTemplates": "浏览所有模板",
+    "communityTitle": "社区模板",
+    "communityDesc": "探索社区分享的创意工作流模板",
+    "exploreCommunity": "探索社区"
   },
   "nav": {
     "myProjects": "我的项目",
