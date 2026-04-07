@@ -37,7 +37,13 @@ test.describe('Dashboard (authenticated)', () => {
     // Cleanup: delete the project created by this test
     const projectId = url.split('/canvas/')[1]?.split(/[?#]/)[0]
     if (projectId) {
-      await page.request.delete(`/api/projects/${projectId}`)
+      try {
+        await page.request.delete(`/api/projects/${projectId}`, {
+          timeout: 10_000 // 10s timeout for cleanup
+        })
+      } catch (error) {
+        console.warn(`Failed to delete project ${projectId}:`, error)
+      }
     }
   })
 

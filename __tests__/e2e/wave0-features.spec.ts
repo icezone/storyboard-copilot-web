@@ -33,7 +33,14 @@ async function createProject(page: import('@playwright/test').Page): Promise<str
 /** Delete a project via API */
 async function deleteProject(page: import('@playwright/test').Page, projectId: string) {
   if (projectId) {
-    await page.request.delete(`/api/projects/${projectId}`)
+    try {
+      await page.request.delete(`/api/projects/${projectId}`, {
+        timeout: 10_000 // 10s timeout for cleanup
+      })
+    } catch (error) {
+      // Ignore cleanup errors - test already passed
+      console.warn(`Failed to delete project ${projectId}:`, error)
+    }
   }
 }
 
