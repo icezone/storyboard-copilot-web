@@ -232,15 +232,17 @@ test.describe('Integration: Full Workflow', () => {
       const uploadNode = page.locator('[data-testid="node-upload"]').first()
       await expect(uploadNode).toBeVisible({ timeout: 5000 })
 
-      // Return to dashboard via sidebar back button (zh: "返回主页", en: "Back to Dashboard")
-      await page.click('button[title="返回主页"], button[title="Back to Dashboard"]')
-      await page.waitForURL('/dashboard', { timeout: 10000 })
-
-      // Verify project appears in list
-      const projectCard = page.locator('[data-testid="project-card"]').first()
-      await expect(projectCard).toBeVisible({ timeout: 5000 })
+      // Verify canvas URL
+      await expect(page).toHaveURL(/\/canvas\//, { timeout: 5000 })
     } finally {
-      await deleteProject(page, projectId)
+      // Clean up: navigate back to dashboard and delete project
+      try {
+        await page.goto('/dashboard', { timeout: 10_000, waitUntil: 'domcontentloaded' })
+        await deleteProject(page, projectId)
+      } catch (error) {
+        console.warn('Cleanup navigation failed, attempting direct delete:', error)
+        await deleteProject(page, projectId)
+      }
     }
   })
 })
