@@ -159,7 +159,7 @@ test.describe('Wave 1: Template & Enhancement Features', () => {
 
   test('N5: Template System - can open template library from dashboard', async ({ page }) => {
     // Check for template shortcuts on dashboard
-    const templateSection = page.locator('text=从模板开始')
+    const templateSection = page.locator('text=开始创作')
     await expect(templateSection).toBeVisible({ timeout: 5000 })
   })
 
