@@ -41,23 +41,33 @@ export function TemplateLibrary({
   }, [defaultTab, isOpen]);
   const [templates, setTemplates] = useState<WorkflowTemplate[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [sort, setSort] = useState<'newest' | 'popular'>('newest');
   const [publishTarget, setPublishTarget] = useState<WorkflowTemplate | null>(null);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
 
   const fetchTemplates = useCallback(async () => {
     setLoading(true);
+    setError(null);
+    setTemplates([]); // Clear old templates while loading
     try {
       const params = new URLSearchParams({ category: tab, sort });
       const res = await fetch(`/api/templates?${params}`);
       if (res.ok) {
         const data = await res.json();
         setTemplates(data.templates ?? []);
+      } else {
+        const errorData = await res.json().catch(() => ({ error: 'Unknown error' }));
+        setError(errorData.error || `Failed to load templates (${res.status})`);
+        console.error('[TemplateLibrary] Failed to fetch templates:', res.status, errorData);
       }
+    } catch (err) {
+      setError(t('template.loadError'));
+      console.error('[TemplateLibrary] Error fetching templates:', err);
     } finally {
       setLoading(false);
     }
-  }, [tab, sort]);
+  }, [tab, sort, t]);
 
   useEffect(() => {
     if (isOpen) {
@@ -220,6 +230,17 @@ export function TemplateLibrary({
             {loading ? (
               <div className="flex items-center justify-center py-20 text-sm text-foreground/40">
                 {t('common.loading')}
+              </div>
+            ) : error ? (
+              <div className="flex flex-col items-center justify-center gap-3 py-20">
+                <p className="text-sm text-red-400">{error}</p>
+                <button
+                  type="button"
+                  onClick={() => void fetchTemplates()}
+                  className="rounded-lg bg-foreground/10 px-4 py-2 text-sm text-foreground hover:bg-foreground/15 transition-colors"
+                >
+                  {t('common.retry')}
+                </button>
               </div>
             ) : templates.length === 0 ? (
               <div className="flex items-center justify-center py-20 text-sm text-foreground/40">

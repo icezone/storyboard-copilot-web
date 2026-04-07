@@ -12,7 +12,8 @@
     "open": "Open",
     "edit": "Edit",
     "settings": "Settings",
-    "error": "Something went wrong"
+    "error": "Something went wrong",
+    "retry": "Retry"
   },
   "auth": {
     "login": "Login",
@@ -402,6 +403,7 @@
     "noTemplates": "No templates yet",
     "noOfficialTemplates": "No official templates yet",
     "noCommunityTemplates": "No community templates yet",
+    "loadError": "Failed to load templates",
     "deleteTemplate": "Delete Template",
     "deleteConfirm": "Delete template \"{{name}}\"?",
     "deleteSuccess": "Template deleted",
