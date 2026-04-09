@@ -13,6 +13,16 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### [Unreleased]
 
+#### Added
+- Database security infrastructure with RLS validation and deployment tools
+- Automated migration validation in CI/CD pipeline to enforce RLS policies
+- Comprehensive RLS documentation with 6 common access patterns
+- Migration template with RLS boilerplate for future database changes
+
+#### Fixed
+- Critical security vulnerability: enabled Row-Level Security on plans table
+- Added performance indexes on user_id columns for RLS policy optimization
+
 ### [0.3.0] - 2026-04-05
 
 #### Added
@@ -89,6 +99,16 @@ IceZone Studio 的所有重要变更都记录在此文件中。
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。
 
 ### [未发布]
+
+#### 新增
+- 数据库安全基础设施，包含 RLS 验证和部署工具
+- CI/CD 中的自动迁移验证，强制执行 RLS 策略
+- 完整的 RLS 文档，包含 6 种常见访问模式
+- 带有 RLS 样板代码的迁移模板，用于未来的数据库变更
+
+#### 修复
+- 关键安全漏洞：在 plans 表上启用行级安全（Row-Level Security）
+- 在 user_id 列上添加性能索引，优化 RLS 策略执行
 
 ### [0.3.0] - 2026-04-05
 
