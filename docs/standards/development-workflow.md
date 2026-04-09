@@ -85,10 +85,23 @@ openspec/changes/<change-id>/
 # planning-with-files 自动读取 tasks.md，逐个执行任务
 # 完成后自动标记 ✅
 
-# 4. 归档变更
+# 4. 更新 CHANGELOG.md（必填）
+# 在 CHANGELOG.md 的 [Unreleased] 区块添加本次变更
+# 按 Added/Changed/Fixed/Removed 分类
+# 双语更新（English + 中文）
+
+# 5. 归档变更
 /opsx:archive
-# 变更完成后归档
+# 归档前检查 CHANGELOG.md 已更新
+# 系统会提示确认 CHANGELOG 更新状态
 ```
+
+**归档前检查清单**：
+- [ ] 代码已提交到 git
+- [ ] **CHANGELOG.md 已更新**（必填）
+- [ ] 在 `[Unreleased]` 区块添加变更条目
+- [ ] 按 `Added` / `Changed` / `Fixed` / `Removed` 分组
+- [ ] 双语更新（English + 中文）
 
 ---
 
@@ -265,11 +278,34 @@ npm run release -- patch --notes-file docs/releases/vx.y.z.md
 
 ## CHANGELOG 同步规则
 
+- **归档变更时（/opsx:archive），必须同步更新 `CHANGELOG.md`**
 - **每次合并 PR 到 main 时，必须同步更新 `CHANGELOG.md`**
 - 在 `[Unreleased]` 区块下追加本次变更条目，按 `Added` / `Changed` / `Fixed` / `Removed` 分组
 - 条目格式：一句话描述变更，不带 commit hash 或 PR 编号
 - 正式发布时，将 `[Unreleased]` 内容移到新版本号标题下，清空 `[Unreleased]`
 - CHANGELOG 采用双语格式（English + 中文），两个语言区块都需要同步更新
+
+### 归档时更新 CHANGELOG 示例
+
+```markdown
+## [Unreleased]
+
+### Added
+- Database security infrastructure with RLS validation tools
+- Automated migration validation in CI/CD pipeline
+- Comprehensive RLS documentation and templates
+
+### Fixed
+- Critical security vulnerability: enabled RLS on plans table
+
+### 新增
+- 数据库安全基础设施，包含 RLS 验证工具
+- CI/CD 中的自动迁移验证
+- 完整的 RLS 文档和模板
+
+### 修复
+- 关键安全漏洞：启用 plans 表的 RLS
+```
 
 ## 提交前检查清单
 
