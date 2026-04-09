@@ -59,7 +59,7 @@ function validateMigration(filePath) {
   }
 
   // Check tables with RLS have at least one policy
-  const policyRegex = /create\s+policy\s+[^o]+on\s+(?:public\.)?(\w+)/gi;
+  const policyRegex = /create\s+policy\s+.*?\s+on\s+(?:public\.)?(\w+)/gi;
   const tablesWithPolicies = new Set();
   while ((match = policyRegex.exec(content)) !== null) {
     tablesWithPolicies.add(match[1].toLowerCase());
