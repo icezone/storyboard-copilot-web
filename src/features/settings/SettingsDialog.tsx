@@ -5,6 +5,7 @@ import { X, RotateCcw, Trash2, Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { subscribeOpenSettingsDialog } from './settingsEvents';
 import { useAuthStore } from '@/stores/authStore';
+import { useThemeStore } from '@/stores/themeStore';
 import i18n from '@/i18n';
 
 const PROVIDERS = ['kie', 'ppio', 'grsai', 'fal', 'openai', 'anthropic'] as const;
@@ -246,6 +247,7 @@ function ApiKeyManager() {
 export function SettingsDialog() {
   const { t } = useTranslation();
   const { user } = useAuthStore();
+  const { theme, setTheme } = useThemeStore();
   const [open, setOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -316,6 +318,35 @@ export function SettingsDialog() {
                 <div className="text-sm text-white/80">{user?.email}</div>
                 <div className="text-xs text-white/50">{user?.id?.slice(0, 8)}...</div>
               </div>
+            </div>
+          </SectionBlock>
+
+          {/* Appearance */}
+          <SectionBlock title={t('settings.appearance')}>
+            <div className="flex gap-2">
+              {(['light', 'dark'] as const).map((mode) => (
+                <button
+                  key={mode}
+                  type="button"
+                  onClick={() => setTheme(mode)}
+                  className={`flex items-center gap-2 rounded-lg border px-4 py-2 text-sm transition-colors ${
+                    theme === mode
+                      ? 'border-blue-500/60 bg-blue-500/15 text-blue-300'
+                      : 'border-white/10 text-white/50 hover:border-white/20 hover:text-white/80'
+                  }`}
+                >
+                  {mode === 'light' ? (
+                    <svg viewBox="0 0 16 16" fill="currentColor" className="h-4 w-4">
+                      <path d="M8 1a.75.75 0 0 1 .75.75v1a.75.75 0 0 1-1.5 0v-1A.75.75 0 0 1 8 1Zm0 10a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm0 1.5a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9Zm6.25-4.25a.75.75 0 0 0 0-1.5h-1a.75.75 0 0 0 0 1.5h1ZM8 13.5a.75.75 0 0 1 .75.75v1a.75.75 0 0 1-1.5 0v-1A.75.75 0 0 1 8 13.5Zm-5.03-2.22a.75.75 0 0 1 0-1.06l.707-.707a.75.75 0 1 1 1.06 1.06l-.706.708a.75.75 0 0 1-1.06 0Zm9.193-9.193a.75.75 0 0 1 0 1.06l-.707.707a.75.75 0 0 1-1.06-1.06l.707-.708a.75.75 0 0 1 1.06 0ZM2.75 8a.75.75 0 0 0-.75-.75H1a.75.75 0 0 0 0 1.5h1A.75.75 0 0 0 2.75 8Zm9.94 2.28a.75.75 0 0 0-1.06 1.06l.707.707a.75.75 0 1 0 1.06-1.06l-.707-.707ZM4.343 4.343a.75.75 0 0 0-1.06-1.06l-.707.707a.75.75 0 0 0 1.06 1.06l.707-.707Z" />
+                    </svg>
+                  ) : (
+                    <svg viewBox="0 0 16 16" fill="currentColor" className="h-4 w-4">
+                      <path d="M8.5 1.75a.75.75 0 0 0-1.5 0v.5a.75.75 0 0 0 1.5 0v-.5ZM3.22 3.22a.75.75 0 0 1 1.06 0l.5.5a.75.75 0 0 1-1.06 1.06l-.5-.5a.75.75 0 0 1 0-1.06Zm9.56 0a.75.75 0 0 0-1.06 0l-.5.5a.75.75 0 1 0 1.06 1.06l.5-.5a.75.75 0 0 0 0-1.06ZM8 5.5A2.5 2.5 0 1 0 8 10.5 2.5 2.5 0 0 0 8 5.5Zm-6.25 3a.75.75 0 0 1 .75-.75h.5a.75.75 0 0 1 0 1.5h-.5a.75.75 0 0 1-.75-.75Zm11.5 0a.75.75 0 0 1 .75-.75h.5a.75.75 0 0 1 0 1.5h-.5a.75.75 0 0 1-.75-.75ZM4.28 11.72a.75.75 0 0 0-1.06 1.06l.5.5a.75.75 0 0 0 1.06-1.06l-.5-.5Zm7.5 1.06a.75.75 0 1 0-1.06-1.06l-.5.5a.75.75 0 1 0 1.06 1.06l.5-.5ZM8.5 13.75a.75.75 0 0 0-1.5 0v.5a.75.75 0 0 0 1.5 0v-.5Z" />
+                    </svg>
+                  )}
+                  {mode === 'light' ? t('settings.themeLight') : t('settings.themeDark')}
+                </button>
+              ))}
             </div>
           </SectionBlock>
 

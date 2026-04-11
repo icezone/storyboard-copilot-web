@@ -147,7 +147,7 @@ function TemplateShortcut({ icon, lucideIcon, title, description, onClick, accen
     <button
       type="button"
       onClick={onClick}
-      className={`group relative flex flex-col overflow-hidden rounded-2xl border border-foreground/8 bg-foreground/[0.03] transition-all hover:border-foreground/15 hover:bg-foreground/[0.06] hover:shadow-lg hover:shadow-black/10`}
+      className="group relative flex flex-col overflow-hidden rounded-2xl border border-[var(--ui-line)] bg-[var(--ui-surface-field)] transition-all hover:border-ui-primary/30 hover:shadow-lg hover:shadow-black/5 hover:ring-1 hover:ring-ui-primary/20"
     >
       {/* Illustration area */}
       <div className="relative h-28 w-full overflow-hidden">
@@ -161,9 +161,9 @@ function TemplateShortcut({ icon, lucideIcon, title, description, onClick, accen
           <span className={`flex h-6 w-6 items-center justify-center rounded-md ${accentClass}`}>
             {lucideIcon}
           </span>
-          <span className="text-sm font-semibold text-foreground">{title}</span>
+          <span className="text-sm font-semibold text-ui-fg">{title}</span>
         </div>
-        <p className="text-xs leading-relaxed text-foreground/50">{description}</p>
+        <p className="text-xs leading-relaxed text-ui-fg-muted">{description}</p>
       </div>
     </button>
   );
@@ -204,7 +204,7 @@ function ProjectCard({ project, onOpen, onDelete, onRename }: ProjectCardProps) 
   return (
     <div
       data-testid="project-card"
-      className="group relative flex flex-col overflow-hidden rounded-lg border border-foreground/10 bg-foreground/[0.04] transition-all hover:border-foreground/20 hover:bg-foreground/[0.07]"
+      className="group relative flex flex-col overflow-hidden rounded-xl border border-[var(--ui-line)] bg-[var(--ui-surface-field)] transition-all hover:border-ui-primary/40 hover:ring-1 hover:ring-ui-primary/20"
     >
       {/* Thumbnail — gradient with project initial, click to open */}
       <div
@@ -248,7 +248,7 @@ function ProjectCard({ project, onOpen, onDelete, onRename }: ProjectCardProps) 
         {renaming ? (
           <input
             ref={inputRef}
-            className="w-full rounded border border-foreground/20 bg-background px-1.5 py-0.5 text-xs text-foreground outline-none"
+            className="w-full rounded border border-[var(--ui-line)] bg-[var(--ui-surface-field)] px-1.5 py-0.5 text-xs text-ui-fg outline-none focus:border-ui-primary"
             value={nameValue}
             onChange={(e) => setNameValue(e.target.value)}
             onBlur={handleRenameSubmit}
@@ -259,13 +259,13 @@ function ProjectCard({ project, onOpen, onDelete, onRename }: ProjectCardProps) 
           />
         ) : (
           <span
-            className="cursor-pointer truncate text-xs font-medium text-foreground"
+            className="cursor-pointer truncate text-xs font-medium text-ui-fg"
             onClick={onOpen}
           >
             {project.name}
           </span>
         )}
-        <div className="flex items-center gap-1 text-[10px] text-foreground/35">
+        <div className="flex items-center gap-1 text-[10px] text-ui-fg-muted/70">
           <Clock className="h-2.5 w-2.5" />
           <span>{formatRelativeTime(project.updated_at, t)}</span>
         </div>
@@ -394,7 +394,7 @@ export default function DashboardPage() {
 
       {/* Loading */}
       {loading && (
-        <div className="flex items-center justify-center py-20 text-sm text-foreground/40">
+        <div className="flex items-center justify-center py-20 text-sm text-ui-fg-muted">
           {t('common.loading')}
         </div>
       )}
@@ -405,15 +405,15 @@ export default function DashboardPage() {
           <section className="mb-10">
             <div className="mb-4 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <Sparkles className="h-5 w-5 text-foreground/50" />
-                <h2 className="text-lg font-semibold text-foreground">
+                <Sparkles className="h-5 w-5 text-ui-primary/60" />
+                <h2 className="text-lg font-semibold text-ui-fg">
                   {t('dashboard.startCreating')}
                 </h2>
               </div>
               <button
                 type="button"
                 onClick={() => openTemplateLibrary('official')}
-                className="flex items-center gap-1.5 rounded-lg text-sm text-foreground/50 transition-colors hover:text-foreground/80"
+                className="flex items-center gap-1.5 rounded-lg text-sm text-ui-fg-muted transition-colors hover:text-ui-fg"
               >
                 {t('dashboard.browseAllTemplates')}
                 <ArrowRight className="h-3.5 w-3.5" />
@@ -436,14 +436,14 @@ export default function DashboardPage() {
             </div>
 
             {/* Community banner */}
-            <div className="mt-4 flex items-center justify-between rounded-xl border border-foreground/8 bg-foreground/[0.02] px-5 py-3.5">
+            <div className="mt-4 flex items-center justify-between rounded-xl border border-[var(--ui-line)] bg-[var(--ui-surface-field)] px-5 py-3.5">
               <div className="flex items-center gap-3">
-                <Globe className="h-5 w-5 text-foreground/40" />
+                <Globe className="h-5 w-5 text-ui-fg-muted" />
                 <div>
-                  <p className="text-sm font-medium text-foreground/70">
+                  <p className="text-sm font-medium text-ui-fg">
                     {t('dashboard.communityTitle')}
                   </p>
-                  <p className="text-xs text-foreground/40">
+                  <p className="text-xs text-ui-fg-muted">
                     {t('dashboard.communityDesc')}
                   </p>
                 </div>
@@ -451,7 +451,7 @@ export default function DashboardPage() {
               <button
                 type="button"
                 onClick={() => openTemplateLibrary('shared')}
-                className="flex items-center gap-1.5 rounded-lg border border-foreground/10 bg-foreground/[0.04] px-3.5 py-1.5 text-xs font-medium text-foreground/60 transition-colors hover:border-foreground/20 hover:text-foreground"
+                className="flex items-center gap-1.5 rounded-lg border border-[var(--ui-line)] bg-ui-bg px-3.5 py-1.5 text-xs font-medium text-ui-fg-muted transition-colors hover:border-ui-primary/40 hover:text-ui-fg"
               >
                 {t('dashboard.exploreCommunity')}
                 <ArrowRight className="h-3 w-3" />
@@ -463,12 +463,12 @@ export default function DashboardPage() {
           <section>
             <div className="mb-4 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <Layers className="h-5 w-5 text-foreground/50" />
-                <h2 className="text-lg font-semibold text-foreground">
+                <Layers className="h-5 w-5 text-ui-fg-muted" />
+                <h2 className="text-lg font-semibold text-ui-fg">
                   {t('dashboard.title')}
                 </h2>
                 {projects.length > 0 && (
-                  <span className="rounded-full bg-foreground/8 px-2 py-0.5 text-xs text-foreground/40">
+                  <span className="rounded-full bg-ui-primary-subtle px-2 py-0.5 text-xs text-ui-primary">
                     {projects.length}
                   </span>
                 )}
@@ -478,7 +478,7 @@ export default function DashboardPage() {
                 onClick={handleCreate}
                 disabled={creating}
                 data-testid="new-project-button"
-                className="flex items-center gap-2 rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background transition-opacity hover:opacity-80 disabled:opacity-50"
+                className="flex items-center gap-2 rounded-lg bg-ui-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-ui-primary-pressed disabled:opacity-50"
               >
                 {creating ? (
                   t('dashboard.creating')
@@ -493,16 +493,16 @@ export default function DashboardPage() {
 
             {/* Empty state */}
             {projects.length === 0 && !error && (
-              <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-foreground/15 py-20 text-center">
-                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-foreground/[0.06]">
-                  <Layers className="h-7 w-7 text-foreground/25" />
+              <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[var(--ui-line-strong)] py-20 text-center">
+                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-ui-primary-subtle">
+                  <Layers className="h-7 w-7 text-ui-primary/50" />
                 </div>
-                <p className="text-sm text-foreground/40">{t('dashboard.empty')}</p>
+                <p className="text-sm text-ui-fg-muted">{t('dashboard.empty')}</p>
                 <button
                   type="button"
                   onClick={handleCreate}
                   disabled={creating}
-                  className="mt-4 flex items-center gap-2 rounded-lg border border-foreground/15 px-4 py-2 text-sm text-foreground/60 transition-colors hover:border-foreground/30 hover:text-foreground disabled:opacity-50"
+                  className="mt-4 flex items-center gap-2 rounded-lg border border-[var(--ui-line-strong)] px-4 py-2 text-sm text-ui-fg-muted transition-colors hover:border-ui-primary/40 hover:text-ui-fg disabled:opacity-50"
                 >
                   <Plus className="h-4 w-4" />
                   {creating ? t('dashboard.creating') : t('dashboard.newProject')}
@@ -530,18 +530,18 @@ export default function DashboardPage() {
 
       {/* Delete confirmation modal */}
       {deleteTarget && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="w-full max-w-sm rounded-2xl border border-foreground/10 bg-background p-6 shadow-2xl">
-            <h2 className="mb-2 text-base font-semibold text-foreground">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-sm rounded-2xl border border-[var(--ui-line)] bg-[var(--ui-surface-panel)] p-6 shadow-2xl">
+            <h2 className="mb-2 text-base font-semibold text-ui-fg">
               {t('dashboard.deleteProject')}
             </h2>
-            <p className="mb-6 text-sm text-foreground/60">
+            <p className="mb-6 text-sm text-ui-fg-muted">
               {t('dashboard.deleteConfirm', { name: deleteTarget.name })}
             </p>
             <div className="flex justify-end gap-3">
               <button
                 type="button"
-                className="rounded-lg border border-foreground/15 px-4 py-2 text-sm text-foreground/70 hover:bg-foreground/5"
+                className="rounded-lg border border-[var(--ui-line)] px-4 py-2 text-sm text-ui-fg-muted hover:bg-[var(--ui-surface-field)]"
                 onClick={() => setDeleteTarget(null)}
               >
                 {t('common.cancel')}

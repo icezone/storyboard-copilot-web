@@ -51,10 +51,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen">
       {/* Sidebar */}
-      <aside className="flex w-56 flex-col border-r border-white/8 bg-[#111113]">
+      <aside className="flex w-56 flex-col border-r border-[var(--ui-line)] bg-ui-bg-2">
         {/* Logo */}
         <div className="flex h-14 items-center px-4">
-          <span className="text-sm font-semibold text-white/90">
+          <span className="text-sm font-semibold text-ui-fg">
             {t('nav.appName')}
           </span>
         </div>
@@ -70,18 +70,18 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </nav>
 
         {/* User */}
-        <div className="border-t border-white/8 p-3">
+        <div className="border-t border-[var(--ui-line)] p-3">
           <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-white/10 text-xs font-medium text-white">
+            <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-ui-primary-subtle text-xs font-medium text-ui-primary">
               {user.email?.charAt(0).toUpperCase() ?? '?'}
             </div>
             <div className="min-w-0 flex-1">
-              <div className="truncate text-xs text-white/65">{user.email}</div>
+              <div className="truncate text-xs text-ui-fg-muted">{user.email}</div>
             </div>
             <button
               onClick={() => void signOut()}
               title={t('auth.signOut')}
-              className="flex-shrink-0 rounded p-1 text-white/35 hover:text-white/70"
+              className="flex-shrink-0 rounded p-1 text-ui-fg-placeholder hover:text-ui-fg-muted"
               type="button"
             >
               <SignOutIcon />
@@ -91,7 +91,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       </aside>
 
       {/* Main */}
-      <main className="flex-1 overflow-y-auto bg-[#0a0a0a] p-6">{children}</main>
+      <main className="flex-1 overflow-y-auto bg-ui-bg p-6">{children}</main>
       <SettingsDialog />
     </div>
   );
@@ -114,8 +114,8 @@ function NavItem({
       href={href}
       className={`flex items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors ${
         active
-          ? 'bg-white/10 text-white font-medium'
-          : 'text-white/55 hover:bg-white/6 hover:text-white/85'
+          ? 'bg-ui-primary-subtle text-ui-primary font-medium'
+          : 'text-ui-fg-muted hover:bg-[var(--ui-surface-field)] hover:text-ui-fg'
       }`}
     >
       <span className="h-4 w-4 flex-shrink-0">{icon}</span>

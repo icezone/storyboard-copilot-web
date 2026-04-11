@@ -68,14 +68,14 @@ interface UiModalProps {
 
 function resolveButtonVariant(variant: ButtonVariant): string {
   if (variant === 'primary') {
-    return 'bg-accent text-white hover:bg-accent/85';
+    return 'bg-ui-primary text-white hover:bg-ui-primary-pressed';
   }
 
   if (variant === 'ghost') {
-    return 'bg-transparent text-text-dark hover:bg-[rgba(15,23,42,0.08)] dark:hover:bg-bg-dark/70';
+    return 'bg-transparent text-ui-fg hover:bg-[var(--ui-surface-field)]';
   }
 
-  return 'bg-[rgba(15,23,42,0.08)] text-text-dark hover:bg-[rgba(15,23,42,0.14)] dark:bg-bg-dark/80 dark:hover:bg-bg-dark';
+  return 'bg-[var(--ui-surface-field)] text-ui-fg border border-[var(--ui-border-soft)] hover:border-[var(--ui-border-strong)]';
 }
 
 function resolveButtonSize(size: ButtonSize): string {
@@ -99,7 +99,7 @@ export function UiButton({
 export function UiIconButton({ className = '', active = false, ...props }: UiIconButtonProps) {
   return (
     <button
-      className={`inline-flex h-10 w-10 items-center justify-center border ui-field transition-colors ${active ? 'border-accent/45 bg-accent/18 text-text-dark' : 'text-text-muted hover:bg-[rgba(15,23,42,0.08)] dark:hover:bg-bg-dark'} ${className}`}
+      className={`inline-flex h-10 w-10 items-center justify-center border ui-field transition-colors ${active ? 'border-ui-primary/45 bg-ui-primary-subtle text-ui-fg' : 'text-ui-fg-muted hover:bg-[var(--ui-surface-field)] hover:text-ui-fg'} ${className}`}
       {...props}
     />
   );
@@ -109,7 +109,7 @@ export const UiChipButton = forwardRef<HTMLButtonElement, UiChipButtonProps>(
   ({ className = '', active = false, ...props }, ref) => (
     <button
       ref={ref}
-      className={`inline-flex h-10 items-center gap-2 border ui-field px-3 text-sm transition-colors ${active ? 'border-accent/45 bg-accent/15 text-text-dark' : 'text-text-dark hover:bg-[rgba(15,23,42,0.08)] dark:hover:bg-bg-dark'} ${className}`}
+      className={`inline-flex h-10 items-center gap-2 border ui-field px-3 text-sm transition-colors ${active ? 'border-ui-primary/45 bg-ui-primary-subtle text-ui-fg' : 'text-ui-fg hover:bg-[var(--ui-surface-field)]'} ${className}`}
       {...props}
     />
   )
@@ -129,7 +129,7 @@ export function UiPanel({ className = '', ...props }: HTMLAttributes<HTMLDivElem
 export function UiTextArea({ className = '', ...props }: TextareaHTMLAttributes<HTMLTextAreaElement>) {
   return (
     <textarea
-      className={`w-full resize-none border ui-field px-3 py-2.5 text-sm text-text-dark outline-none transition-colors placeholder:text-text-muted/70 focus:border-accent ${className}`}
+      className={`w-full resize-none border ui-field px-3 py-2.5 text-sm text-ui-fg outline-none transition-colors placeholder:text-ui-fg-placeholder focus:border-ui-primary ${className}`}
       {...props}
     />
   );
@@ -139,7 +139,7 @@ export const UiTextAreaField = forwardRef<HTMLTextAreaElement, TextareaHTMLAttri
   ({ className = '', ...props }, ref) => (
     <textarea
       ref={ref}
-      className={`w-full resize-none border ui-field px-3 py-2.5 text-sm text-text-dark outline-none transition-colors placeholder:text-text-muted/70 focus:border-accent ${className}`}
+      className={`w-full resize-none border ui-field px-3 py-2.5 text-sm text-ui-fg outline-none transition-colors placeholder:text-ui-fg-placeholder focus:border-ui-primary ${className}`}
       {...props}
     />
   )
@@ -151,7 +151,7 @@ export const UiInput = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInpu
   ({ className = '', ...props }, ref) => (
     <input
       ref={ref}
-      className={`w-full border ui-field px-3 py-2 text-sm text-text-dark outline-none transition-colors placeholder:text-text-muted/70 focus:border-accent ${className}`}
+      className={`w-full border ui-field px-3 py-2 text-sm text-ui-fg outline-none transition-colors placeholder:text-ui-fg-placeholder focus:border-ui-primary ${className}`}
       {...props}
     />
   )
@@ -168,7 +168,7 @@ export const UiCheckbox = forwardRef<HTMLButtonElement, UiCheckboxProps>(
       aria-checked={checked}
       className={`inline-flex h-5 w-5 items-center justify-center rounded border transition-colors ${
         checked
-          ? 'border-accent/60 bg-accent/20 text-accent'
+          ? 'border-ui-primary/60 bg-ui-primary-subtle text-ui-primary'
           : 'text-transparent hover:border-[var(--ui-border-strong)]'
       } ${className}`}
       style={
@@ -445,8 +445,8 @@ export function UiSelect({ className = '', children, ...props }: UiSelectProps) 
                         option.disabled
                           ? 'cursor-not-allowed opacity-40'
                           : isSelected
-                            ? 'bg-accent text-white'
-                            : 'text-text-dark hover:bg-[rgba(255,255,255,0.08)] dark:hover:bg-white/[0.06]'
+                            ? 'bg-ui-primary text-white'
+                            : 'text-ui-fg hover:bg-[var(--ui-surface-field)]'
                       }`}
                       onClick={() => {
                         if (option.disabled) {
@@ -495,8 +495,8 @@ export function UiModal({
       <UiPanel
         className={`relative transition-opacity duration-200 ${isVisible ? 'opacity-100' : 'opacity-0'} ${widthClassName}`}
       >
-        <div className="flex items-center justify-between border-b border-[rgba(255,255,255,0.1)] px-4 py-3">
-          <h2 className="text-sm font-medium text-text-dark">{title}</h2>
+        <div className="flex items-center justify-between border-b border-[var(--ui-border-soft)] px-4 py-3">
+          <h2 className="text-sm font-medium text-ui-fg">{title}</h2>
           <UiIconButton className="h-8 w-8" onClick={onClose}>
             <X className="h-4 w-4" />
           </UiIconButton>
@@ -505,7 +505,7 @@ export function UiModal({
         <div className="px-4 py-4">{children}</div>
 
         {footer && (
-          <div className="flex justify-end gap-2 border-t border-[rgba(255,255,255,0.1)] px-4 py-3">
+          <div className="flex justify-end gap-2 border-t border-[var(--ui-border-soft)] px-4 py-3">
             {footer}
           </div>
         )}

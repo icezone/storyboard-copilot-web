@@ -9,7 +9,7 @@
   --font-mono: var(--font-geist-mono);
   --font-display: var(--font-display);
 
-  /* Landing palette */
+  /* Landing palette (static — landing page only) */
   --color-ink: #070a10;
   --color-surface: #0d1525;
   --color-frame: #111827;
@@ -24,24 +24,95 @@
   --color-border: rgba(255, 255, 255, 0.08);
   --color-border-subtle: rgba(255, 255, 255, 0.05);
 
-  /* App colors — forced dark */
-  --color-background: #0a0a0a;
-  --color-foreground: #ededed;
-
-  /* Canvas dark palette */
+  /* Canvas dark palette (static — always dark) */
   --color-bg-dark: #111113;
   --color-surface-dark: #1c1c21;
   --color-text-dark: #e2e8f0;
   --color-text-muted: #94a3b8;
   --color-border-dark: rgba(255,255,255,0.12);
   --color-accent: #3b82f6;
+
+  /* Miro design system brand values (static) */
+  --color-blue-450: #5b76fe;
+  --color-blue-450-pressed: #2a41b6;
+  --color-success: #00b473;
+  --color-coral-light: #ffc6c6;
+  --color-coral-dark: #600000;
+  --color-teal-light: #c3faf5;
+  --color-teal-dark: #187574;
+  --color-rose-light: #ffd8f4;
+  --color-orange-light: #ffe6cd;
+
+  /* App semantic tokens — theme-aware via CSS vars */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-ui-bg: var(--ui-bg);
+  --color-ui-bg-2: var(--ui-bg-2);
+  --color-ui-bg-raised: var(--ui-bg-raised);
+  --color-ui-fg: var(--ui-fg);
+  --color-ui-fg-muted: var(--ui-fg-muted);
+  --color-ui-fg-placeholder: var(--ui-fg-placeholder);
+  --color-ui-line: var(--ui-line);
+  --color-ui-line-strong: var(--ui-line-strong);
+  --color-ui-primary: var(--ui-primary);
+  --color-ui-primary-pressed: var(--ui-primary-pressed);
+  --color-ui-primary-subtle: var(--ui-primary-subtle);
 }
 
-/* ─── Base ──────────────────────────────────────────────── */
+/* ─── Base — Light mode (default) ──────────────────────── */
 :root {
+  --background: #ffffff;
+  --foreground: #1c1c1e;
+
+  /* App semantic vars */
+  --ui-bg:              #ffffff;
+  --ui-bg-2:            #f5f6fa;
+  --ui-bg-raised:       #ffffff;
+  --ui-fg:              #1c1c1e;
+  --ui-fg-muted:        #555a6a;
+  --ui-fg-placeholder:  #a5a8b5;
+  --ui-line:            rgba(0, 0, 0, 0.09);
+  --ui-line-strong:     #c7cad5;
+  --ui-primary:         #5b76fe;
+  --ui-primary-pressed: #2a41b6;
+  --ui-primary-subtle:  rgba(91, 118, 254, 0.08);
+
+  /* UI primitive vars */
+  --ui-surface-field:   rgba(0, 0, 0, 0.04);
+  --ui-surface-panel:   #ffffff;
+  --ui-border-soft:     rgba(0, 0, 0, 0.09);
+  --ui-border-strong:   rgba(0, 0, 0, 0.18);
+  --ui-shadow-panel:    0 4px 24px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.06);
+  --accent-rgb:         91, 118, 254;
+
+  --node-radius: 10px;
+}
+
+/* ─── Dark mode overrides ───────────────────────────────── */
+.dark {
   --background: #0a0a0a;
   --foreground: #ededed;
-  --node-radius: 10px;
+
+  /* App semantic vars */
+  --ui-bg:              #111113;
+  --ui-bg-2:            #0a0a0a;
+  --ui-bg-raised:       #1a1a24;
+  --ui-fg:              #e2e8f0;
+  --ui-fg-muted:        #94a3b8;
+  --ui-fg-placeholder:  #64748b;
+  --ui-line:            rgba(255, 255, 255, 0.10);
+  --ui-line-strong:     rgba(255, 255, 255, 0.20);
+  --ui-primary:         #5b76fe;
+  --ui-primary-pressed: #2a41b6;
+  --ui-primary-subtle:  rgba(91, 118, 254, 0.15);
+
+  /* UI primitive vars */
+  --ui-surface-field:   rgba(255, 255, 255, 0.05);
+  --ui-surface-panel:   #1a1a24;
+  --ui-border-soft:     rgba(255, 255, 255, 0.14);
+  --ui-border-strong:   rgba(255, 255, 255, 0.28);
+  --ui-shadow-panel:    0 8px 32px rgba(0,0,0,0.6), 0 2px 8px rgba(0,0,0,0.4);
+  --accent-rgb:         91, 118, 254;
 }
 
 body {
@@ -52,108 +123,62 @@ body {
 
 /* ─── Keyframes ─────────────────────────────────────────── */
 @keyframes reveal-up {
-  from {
-    opacity: 0;
-    transform: translateY(28px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes reveal-in {
-  from {
-    opacity: 0;
-    transform: scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
 }
 
 @keyframes float-y {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-8px);
-  }
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
 }
 
 @keyframes pulse-glow {
-  0%, 100% {
-    box-shadow: 0 0 0 0 rgba(245, 150, 49, 0.4);
-  }
-  50% {
-    box-shadow: 0 0 0 12px rgba(245, 150, 49, 0);
-  }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(245, 150, 49, 0.4); }
+  50%       { box-shadow: 0 0 0 12px rgba(245, 150, 49, 0); }
 }
 
 @keyframes shimmer-x {
-  from {
-    background-position: -200% center;
-  }
-  to {
-    background-position: 200% center;
-  }
+  from { background-position: -200% center; }
+  to   { background-position: 200% center; }
 }
 
 @keyframes flow-path {
-  0% {
-    stroke-dashoffset: 300;
-  }
-  100% {
-    stroke-dashoffset: 0;
-  }
+  0%   { stroke-dashoffset: 300; }
+  100% { stroke-dashoffset: 0; }
 }
 
 @keyframes dot-travel {
-  0% {
-    offset-distance: 0%;
-    opacity: 1;
-  }
-  90% {
-    opacity: 1;
-  }
-  100% {
-    offset-distance: 100%;
-    opacity: 0;
-  }
+  0%   { offset-distance: 0%; opacity: 1; }
+  90%  { opacity: 1; }
+  100% { offset-distance: 100%; opacity: 0; }
 }
 
 @keyframes spin-slow {
   from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  to   { transform: rotate(360deg); }
 }
 
 @keyframes gradient-drift {
   0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+  50%       { background-position: 100% 50%; }
 }
 
 @keyframes blink-cursor {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+  50%       { opacity: 0; }
 }
 
 /* ─── Utility Classes ───────────────────────────────────── */
-.animate-reveal-up {
-  animation: reveal-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-.animate-reveal-in {
-  animation: reveal-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-.animate-float {
-  animation: float-y 5s ease-in-out infinite;
-}
-
-.animate-pulse-glow {
-  animation: pulse-glow 2.5s ease-in-out infinite;
-}
+.animate-reveal-up  { animation: reveal-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-reveal-in  { animation: reveal-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-float      { animation: float-y 5s ease-in-out infinite; }
+.animate-pulse-glow { animation: pulse-glow 2.5s ease-in-out infinite; }
+.animate-gradient   { background-size: 200% 200%; animation: gradient-drift 4s ease infinite; }
 
 .animate-shimmer {
   background: linear-gradient(
@@ -164,11 +189,6 @@ body {
   );
   background-size: 200% auto;
   animation: shimmer-x 2s linear infinite;
-}
-
-.animate-gradient {
-  background-size: 200% 200%;
-  animation: gradient-drift 4s ease infinite;
 }
 
 /* ─── Stagger Delays ────────────────────────────────────── */
@@ -231,37 +251,24 @@ body {
 
 /* ─── Popup panel (UiPanel) ─────────────────────────────── */
 .ui-panel {
-  background: rgba(20, 20, 28, 0.97);
-  border-color: rgba(255, 255, 255, 0.1);
+  background: var(--ui-surface-panel);
+  border-color: var(--ui-border-soft);
   border-radius: 14px;
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.06),
-    0 16px 48px rgba(0, 0, 0, 0.7),
-    0 4px 16px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--ui-shadow-panel);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
 }
 
 /* ─── Input / field base ────────────────────────────────── */
 .ui-field {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.12);
+  background: var(--ui-surface-field);
+  border-color: var(--ui-border-soft);
   border-radius: 8px;
-  color: #e2e8f0;
+  color: var(--ui-fg);
 }
 .ui-field:focus {
-  border-color: rgba(59, 130, 246, 0.6);
+  border-color: var(--ui-primary);
   outline: none;
-}
-
-/* ─── UI primitive CSS variables (dark-forced) ──────────── */
-:root {
-  --ui-surface-field:      rgba(255, 255, 255, 0.05);
-  --ui-surface-panel:      #1a1a24;
-  --ui-border-soft:        rgba(255, 255, 255, 0.14);
-  --ui-border-strong:      rgba(255, 255, 255, 0.28);
-  --ui-shadow-panel:       0 8px 32px rgba(0,0,0,0.6), 0 2px 8px rgba(0,0,0,0.4);
-  --accent-rgb:            59, 130, 246;
 }
 
 /* Remove number input spinners */
