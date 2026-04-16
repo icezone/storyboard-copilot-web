@@ -407,6 +407,8 @@ export function LiveCanvasShowcase() {
   const { t } = useTranslation();
   const sectionRef = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
+  const scaleWrapperRef = useRef<HTMLDivElement>(null);
+  const [canvasScale, setCanvasScale] = useState(1);
 
   const [positions, setPositions] = useState<Record<string, NodePos>>(INITIAL_POSITIONS);
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
@@ -420,6 +422,18 @@ export function LiveCanvasShowcase() {
       ([entry]) => { if (entry.isIntersecting) el.classList.add('revealed'); },
       { threshold: 0.1 }
     );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // Scale canvas to fit container width on mobile
+  useEffect(() => {
+    const el = scaleWrapperRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver(([entry]) => {
+      const w = entry.contentRect.width;
+      setCanvasScale(Math.min(1, w / CANVAS_W));
+    });
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
@@ -541,82 +555,96 @@ export function LiveCanvasShowcase() {
             </div>
           </div>
 
-          {/* Canvas body */}
+          {/* Scale wrapper — controls outer height, collapses correctly on mobile */}
           <div
-            ref={canvasRef}
-            onPointerMove={onPointerMove}
-            onPointerUp={stopDrag}
-            onPointerLeave={stopDrag}
-            onPointerCancel={stopDrag}
-            onClick={() => setSelectedNode(null)}
+            ref={scaleWrapperRef}
             style={{
-              position: 'relative',
               width: '100%',
-              height: CANVAS_H,
-              backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)',
-              backgroundSize: '24px 24px',
+              height: CANVAS_H * canvasScale,
               overflow: 'hidden',
-              cursor: 'default',
-              touchAction: 'none',
+              position: 'relative',
             }}
           >
-            {/* SVG edges */}
-            <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', overflow: 'visible', pointerEvents: 'none' }}>
-              <BezierEdge x1={uploadRightX} y1={uploadMidY} x2={imageLeftX} y2={imageMidY} animated />
-              <BezierEdge x1={uploadRightX} y1={uploadMidY} x2={videoLeftX} y2={videoMidY} animated />
-              <BezierEdge x1={imageRightX} y1={imageMidY} x2={videoLeftX} y2={videoMidY} animated />
-            </svg>
+            {/* Canvas body — fixed CANVAS_W width, scaled via transform */}
+            <div
+              ref={canvasRef}
+              onPointerMove={canvasScale < 1 ? undefined : onPointerMove}
+              onPointerUp={canvasScale < 1 ? undefined : stopDrag}
+              onPointerLeave={canvasScale < 1 ? undefined : stopDrag}
+              onPointerCancel={canvasScale < 1 ? undefined : stopDrag}
+              onClick={() => setSelectedNode(null)}
+              style={{
+                position: 'relative',
+                width: CANVAS_W,
+                height: CANVAS_H,
+                backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)',
+                backgroundSize: '24px 24px',
+                overflow: 'hidden',
+                cursor: 'default',
+                touchAction: 'none',
+                transform: `scale(${canvasScale})`,
+                transformOrigin: 'top left',
+                pointerEvents: canvasScale < 1 ? 'none' : 'auto',
+              }}
+            >
+              {/* SVG edges */}
+              <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', overflow: 'visible', pointerEvents: 'none' }}>
+                <BezierEdge x1={uploadRightX} y1={uploadMidY} x2={imageLeftX} y2={imageMidY} animated />
+                <BezierEdge x1={uploadRightX} y1={uploadMidY} x2={videoLeftX} y2={videoMidY} animated />
+                <BezierEdge x1={imageRightX} y1={imageMidY} x2={videoLeftX} y2={videoMidY} animated />
+              </svg>
 
-            {/* Nodes */}
-            <UploadDemoNode
-              pos={positions.upload}
-              selected={selectedNode === 'upload'}
-              onPointerDown={(e) => startDrag('upload', e)}
-            />
-            <ImageEditDemoNode
-              pos={positions.image}
-              selected={selectedNode === 'image'}
-              onPointerDown={(e) => startDrag('image', e)}
-            />
-            <VideoGenDemoNode
-              pos={positions.video}
-              selected={selectedNode === 'video'}
-              onPointerDown={(e) => startDrag('video', e)}
-            />
+              {/* Nodes */}
+              <UploadDemoNode
+                pos={positions.upload}
+                selected={selectedNode === 'upload'}
+                onPointerDown={(e) => startDrag('upload', e)}
+              />
+              <ImageEditDemoNode
+                pos={positions.image}
+                selected={selectedNode === 'image'}
+                onPointerDown={(e) => startDrag('image', e)}
+              />
+              <VideoGenDemoNode
+                pos={positions.video}
+                selected={selectedNode === 'video'}
+                onPointerDown={(e) => startDrag('video', e)}
+              />
 
-            {/* Minimap */}
-            <div style={{
-              position: 'absolute', bottom: 12, right: 12,
-              width: 90, height: 60,
-              background: 'rgba(0,0,0,0.45)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: 8, overflow: 'hidden',
-              backdropFilter: 'blur(4px)',
-            }}>
+              {/* Minimap */}
               <div style={{
-                width: '100%', height: '100%',
-                backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px)',
-                backgroundSize: '6px 6px', opacity: 0.6,
-              }} />
-              {Object.entries(positions).map(([id, pos]) => (
-                <div key={id} style={{
-                  position: 'absolute',
-                  left: `${(pos.x / CANVAS_W) * 100}%`,
-                  top: `${(pos.y / CANVAS_H) * 100}%`,
-                  width: 14, height: 9,
-                  background: id === selectedNode ? ACCENT : 'rgba(255,255,255,0.2)',
-                  borderRadius: 2,
+                position: 'absolute', bottom: 12, right: 12,
+                width: 90, height: 60,
+                background: 'rgba(0,0,0,0.45)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                borderRadius: 8, overflow: 'hidden',
+                backdropFilter: 'blur(4px)',
+              }}>
+                <div style={{
+                  width: '100%', height: '100%',
+                  backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px)',
+                  backgroundSize: '6px 6px', opacity: 0.6,
                 }} />
-              ))}
-            </div>
+                {Object.entries(positions).map(([id, pos]) => (
+                  <div key={id} style={{
+                    position: 'absolute',
+                    left: `${(pos.x / CANVAS_W) * 100}%`,
+                    top: `${(pos.y / CANVAS_H) * 100}%`,
+                    width: 14, height: 9,
+                    background: id === selectedNode ? ACCENT : 'rgba(255,255,255,0.2)',
+                    borderRadius: 2,
+                  }} />
+                ))}
+              </div>
 
-            {/* Drag hint */}
-            <div style={{
-              position: 'absolute', bottom: 14, left: 14,
-              fontSize: 10, color: 'rgba(255,255,255,0.25)',
-              fontFamily: 'monospace', pointerEvents: 'none',
-            }}>
-              {t('landing.canvas.dragHint')}
+              {/* Drag hint */}
+              <div style={{
+                position: 'absolute', bottom: 14, left: 14,
+                fontSize: 10, color: 'rgba(255,255,255,0.25)',
+                fontFamily: 'monospace', pointerEvents: 'none',
+              }}>
+                {t('landing.canvas.dragHint')}
+              </div>
             </div>
           </div>
         </div>
