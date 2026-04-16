@@ -21,6 +21,10 @@ const syne = Syne({
 
 export const metadata: Metadata = {
   title: "IceZone Studio — AI Creative Studio",
+  icons: {
+    icon: "/logo.svg",
+    shortcut: "/logo.svg",
+  },
   description:
     "A node-based AI canvas for generating images, creating storyboards, and producing videos. Powered by the world's best AI models including Kling, Sora2, and Veo.",
   keywords: "AI storyboard, image generation, video generation, AI canvas, creative tool, IceZone Studio",
