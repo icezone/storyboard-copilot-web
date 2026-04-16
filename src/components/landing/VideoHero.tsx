@@ -19,10 +19,10 @@ export function VideoHero() {
   }, []);
 
   return (
-    <section className="relative w-full h-[70vh] min-h-[500px] sm:h-screen flex items-center justify-center overflow-hidden bg-[#070a10]">
+    <section className="relative w-full aspect-video sm:aspect-auto sm:h-screen flex items-center justify-center overflow-hidden bg-[#070a10]">
       {/* Video background */}
       <video
-        className="absolute inset-0 w-full h-full object-contain sm:object-cover"
+        className="absolute inset-0 w-full h-full object-cover"
         src="/banner.mp4"
         poster="/banner-poster.jpg"
         autoPlay
@@ -68,19 +68,19 @@ export function VideoHero() {
 
         {/* CTA buttons */}
         <div
-          className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-reveal-in"
+          className="flex flex-col items-stretch sm:flex-row sm:items-center justify-center gap-3 animate-reveal-in w-full max-w-xs sm:max-w-none mx-auto"
           style={{ animationDelay: '400ms' }}
         >
           <Link
             href="/signup"
-            className="w-full sm:w-auto text-sm font-semibold text-white px-7 py-3 rounded-xl transition-all duration-200 hover:brightness-110 hover:scale-105"
+            className="text-center text-sm font-semibold text-white px-7 py-3 rounded-xl transition-all duration-200 hover:brightness-110 hover:scale-105"
             style={{ background: 'linear-gradient(135deg, var(--color-electric), var(--color-violet))', boxShadow: '0 4px 24px rgba(91,118,254,0.35)' }}
           >
             {t('landing.hero.cta')}
           </Link>
           <a
             href="#canvas"
-            className="w-full sm:w-auto text-sm font-medium text-white/80 hover:text-white px-7 py-3 rounded-xl border border-white/20 hover:border-white/40 transition-colors backdrop-blur-sm"
+            className="text-center text-sm font-medium text-white/80 hover:text-white px-7 py-3 rounded-xl border border-white/20 hover:border-white/40 transition-colors backdrop-blur-sm"
           >
             {t('landing.hero.ctaSecondary')}
           </a>
