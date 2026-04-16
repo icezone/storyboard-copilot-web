@@ -39,7 +39,7 @@ export function LandingFooter() {
       <div className="max-w-6xl mx-auto">
         {/* Top row */}
         <div className="flex flex-col md:flex-row gap-10 mb-10">
-          {/* Brand */
+          {/* Brand */}
           <div className="flex-1 max-w-xs">
             <Link href="/" className="flex items-center gap-2.5 mb-3">
               {/* eslint-disable-next-line @next/next/no-img-element */}
