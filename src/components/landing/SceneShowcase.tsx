@@ -63,8 +63,8 @@ export function SceneShowcase() {
   return (
     <section className="overflow-hidden" style={{ background: 'var(--color-ink)' }}>
       {/* Heading */}
-      <div ref={headingRef} className="scroll-reveal text-center pt-24 pb-12 px-6">
-        <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+      <div ref={headingRef} className="scroll-reveal text-center pt-12 md:pt-24 pb-8 md:pb-12 px-6">
+        <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
           {t('landing.scenes.title')}
         </h2>
         <p className="text-lg max-w-2xl mx-auto" style={{ color: 'var(--color-muted)' }}>
@@ -73,7 +73,7 @@ export function SceneShowcase() {
       </div>
 
       {/* Carousel track — no frame, edge-to-edge */}
-      <div className="relative overflow-hidden">
+      <div className="relative w-full overflow-hidden">
         <div
           className="flex"
           style={{
@@ -82,9 +82,9 @@ export function SceneShowcase() {
           }}
         >
           {SCENE_IDS.map((id) => (
-            <div key={id} className="min-w-full shrink-0">
+            <div key={id} className="flex-none w-full">
               {/* Main video — autoplay, muted, no controls, no focus highlight */}
-              <div className="relative w-full" style={{ aspectRatio: '16/9', maxHeight: 540 }}>
+              <div className="relative w-full" style={{ aspectRatio: '16/9' }}>
                 <video
                   autoPlay
                   loop
@@ -108,7 +108,7 @@ export function SceneShowcase() {
                     aria-hidden="true"
                     tabIndex={-1}
                     className="w-full block object-cover"
-                    style={{ aspectRatio: '16/9', maxHeight: 540, opacity: 0.4, pointerEvents: 'none' }}
+                    style={{ aspectRatio: '16/9', opacity: 0.4, pointerEvents: 'none' }}
                   >
                     <source src={SCENE_VIDEOS[id]} type="video/mp4" />
                   </video>
@@ -142,26 +142,25 @@ export function SceneShowcase() {
       </div>
 
       {/* Tab labels — flush to video, no background frame */}
-      <div className="pb-16 pt-2 px-6">
-        <div className="flex items-center justify-center flex-wrap gap-2">
+      <div className="pb-16 pt-2 px-4">
+        <div className="flex items-center justify-center flex-wrap gap-1 sm:gap-2">
           {tabs.map((tab, i) => (
             <button
               key={tab.id}
               onClick={() => handleTabClick(i)}
-              className="relative px-6 py-2 text-xl font-semibold transition-colors duration-200"
+              className="relative px-3 sm:px-6 py-2 text-sm sm:text-xl font-semibold transition-colors duration-200"
               style={{ color: activeIndex === i ? 'white' : 'var(--color-muted)' }}
             >
               {tab.label}
               {activeIndex === i && (
                 <span
-                  className="absolute bottom-0 left-5 right-5 h-0.5 rounded-full"
+                  className="absolute bottom-0 left-2 right-2 sm:left-5 sm:right-5 h-0.5 rounded-full"
                   style={{ background: 'var(--color-electric)' }}
                 />
               )}
             </button>
           ))}
         </div>
-
       </div>
     </section>
   );
