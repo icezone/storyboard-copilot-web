@@ -27,6 +27,21 @@ export function SceneShowcase() {
   const [activeIndex, setActiveIndex] = useState(0);
   const slideIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const headingRef = useRef<HTMLDivElement>(null);
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+  const reflectionRefs = useRef<(HTMLVideoElement | null)[]>([]);
+  const loadedIndices = useRef<Set<number>>(new Set([0])); // first slide loaded eagerly
+
+  // Assign src lazily when a slide becomes active for the first time
+  useEffect(() => {
+    if (!loadedIndices.current.has(activeIndex)) {
+      loadedIndices.current.add(activeIndex);
+      const id = SCENE_IDS[activeIndex];
+      const v = videoRefs.current[activeIndex];
+      const r = reflectionRefs.current[activeIndex];
+      if (v && !v.src) { v.src = SCENE_VIDEOS[id]; v.load(); }
+      if (r && !r.src) { r.src = SCENE_VIDEOS[id]; r.load(); }
+    }
+  }, [activeIndex]);
 
   // Start (or restart) the 5s auto-advance
   const startTimers = useCallback(() => {
@@ -45,7 +60,16 @@ export function SceneShowcase() {
   }, [activeIndex, startTimers]);
 
   const handleTabClick = (i: number) => {
-    setActiveIndex(i); // triggers useEffect above which restarts timers
+    // Assign src immediately on click (before state update) to avoid blank frame
+    if (!loadedIndices.current.has(i)) {
+      loadedIndices.current.add(i);
+      const id = SCENE_IDS[i];
+      const v = videoRefs.current[i];
+      const r = reflectionRefs.current[i];
+      if (v && !v.src) { v.src = SCENE_VIDEOS[id]; v.load(); }
+      if (r && !r.src) { r.src = SCENE_VIDEOS[id]; r.load(); }
+    }
+    setActiveIndex(i);
   };
 
   // Scroll-reveal for heading
@@ -81,37 +105,39 @@ export function SceneShowcase() {
             transition: 'transform 0.7s cubic-bezier(0.25, 1, 0.5, 1)',
           }}
         >
-          {SCENE_IDS.map((id) => (
+          {SCENE_IDS.map((id, idx) => (
             <div key={id} className="flex-none w-full">
-              {/* Main video — autoplay, muted, no controls, no focus highlight */}
+              {/* Main video — src assigned lazily except for index 0 */}
               <div className="relative w-full" style={{ aspectRatio: '16/9' }}>
                 <video
+                  ref={el => { videoRefs.current[idx] = el; }}
+                  src={idx === 0 ? SCENE_VIDEOS[id] : undefined}
                   autoPlay
                   loop
                   muted
                   playsInline
+                  preload="none"
                   className="w-full h-full object-cover block"
                   style={{ outline: 'none', pointerEvents: 'none' }}
-                >
-                  <source src={SCENE_VIDEOS[id]} type="video/mp4" />
-                </video>
+                />
               </div>
 
               {/* Reflection — flipped, 60px tall, fades to black */}
               <div className="relative overflow-hidden" style={{ height: 60 }}>
                 <div style={{ transform: 'scaleY(-1)', transformOrigin: 'top center' }}>
                   <video
+                    ref={el => { reflectionRefs.current[idx] = el; }}
+                    src={idx === 0 ? SCENE_VIDEOS[id] : undefined}
                     autoPlay
                     loop
                     muted
                     playsInline
+                    preload="none"
                     aria-hidden="true"
                     tabIndex={-1}
                     className="w-full block object-cover"
                     style={{ aspectRatio: '16/9', opacity: 0.4, pointerEvents: 'none' }}
-                  >
-                    <source src={SCENE_VIDEOS[id]} type="video/mp4" />
-                  </video>
+                  />
                 </div>
                 {/* Gradient mask */}
                 <div

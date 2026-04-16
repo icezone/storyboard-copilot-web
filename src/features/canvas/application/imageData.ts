@@ -171,24 +171,6 @@ export async function readFileAsDataUrl(file: File): Promise<string> {
   });
 }
 
-function resolveFileExtension(file: File): string {
-  const mime = file.type.toLowerCase();
-  if (mime === 'image/png') return 'png';
-  if (mime === 'image/jpeg' || mime === 'image/jpg') return 'jpg';
-  if (mime === 'image/webp') return 'webp';
-  if (mime === 'image/gif') return 'gif';
-  if (mime === 'image/bmp') return 'bmp';
-  if (mime === 'image/tiff') return 'tiff';
-  if (mime === 'image/avif') return 'avif';
-
-  const name = file.name.trim();
-  const dot = name.lastIndexOf('.');
-  if (dot >= 0 && dot < name.length - 1) {
-    return name.slice(dot + 1).toLowerCase();
-  }
-  return 'png';
-}
-
 export async function prepareNodeImageFromFile(
   file: File,
   maxPreviewDimension = DEFAULT_PREVIEW_MAX_DIMENSION

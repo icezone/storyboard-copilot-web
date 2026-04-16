@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useTranslation } from 'react-i18next';
 
 export function VideoHero() {
@@ -29,6 +28,7 @@ export function VideoHero() {
         muted
         loop
         playsInline
+        preload="metadata"
         aria-hidden="true"
       />
 

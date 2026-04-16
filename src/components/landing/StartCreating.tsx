@@ -125,6 +125,7 @@ export function StartCreating() {
                   fill
                   className="object-cover"
                   sizes={`${cfg.size}px`}
+                  loading="lazy"
                 />
               </div>
             </div>

@@ -124,8 +124,8 @@ function UploadDemoNode({ pos, onPointerDown, selected }: {
         border: `1px solid ${selected ? ACCENT : NODE_BORDER}`,
         borderRadius: 10,
         boxShadow: selected
-          ? '0 0 0 1px rgba(91,118,254,0.32), 0 4px 20px rgba(0,0,0,0.4)'
-          : '0 4px 16px rgba(0,0,0,0.4)',
+          ? '0 0 0 1px rgba(91,118,254,0.32), 0 4px 12px rgba(0,0,0,0.35)'
+          : '0 2px 8px rgba(0,0,0,0.3)',
         cursor: 'grab',
         userSelect: 'none',
         overflow: 'visible',
@@ -182,8 +182,8 @@ function ImageEditDemoNode({ pos, onPointerDown, selected }: {
         border: `1px solid ${selected ? ACCENT : NODE_BORDER}`,
         borderRadius: 10,
         boxShadow: selected
-          ? '0 0 0 1px rgba(91,118,254,0.32), 0 4px 20px rgba(0,0,0,0.4)'
-          : '0 4px 16px rgba(0,0,0,0.4)',
+          ? '0 0 0 1px rgba(91,118,254,0.32), 0 4px 12px rgba(0,0,0,0.35)'
+          : '0 2px 8px rgba(0,0,0,0.3)',
         cursor: 'grab',
         userSelect: 'none',
         display: 'flex',
@@ -289,8 +289,8 @@ function VideoGenDemoNode({ pos, onPointerDown, selected }: {
         border: `1px solid ${selected ? ACCENT : NODE_BORDER}`,
         borderRadius: 10,
         boxShadow: selected
-          ? '0 0 0 1px rgba(91,118,254,0.32), 0 4px 20px rgba(0,0,0,0.4)'
-          : '0 4px 16px rgba(0,0,0,0.4)',
+          ? '0 0 0 1px rgba(91,118,254,0.32), 0 4px 12px rgba(0,0,0,0.35)'
+          : '0 2px 8px rgba(0,0,0,0.3)',
         cursor: 'grab',
         userSelect: 'none',
         display: 'flex',

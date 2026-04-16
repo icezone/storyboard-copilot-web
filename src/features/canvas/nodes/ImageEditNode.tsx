@@ -223,7 +223,7 @@ function buildAiResultNodeTitle(prompt: string, fallbackTitle: string): string {
 }
 
 export const ImageEditNode = memo(({ id, data, selected, width, height }: ImageEditNodeProps) => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const updateNodeInternals = useUpdateNodeInternals();
   const [error, setError] = useState<string | null>(null);
 

@@ -3,7 +3,6 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import {
   ApiKeyRotator,
   classifyError,
-  type ApiKeyErrorType,
   type KeyEntry,
 } from '@/server/ai/keyRotation'
 

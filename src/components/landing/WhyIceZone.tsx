@@ -149,6 +149,7 @@ export function WhyIceZone() {
                       fill
                       className="object-cover"
                       sizes="(max-width: 768px) 25vw, 12vw"
+                      loading="lazy"
                     />
                   </div>
                 ))}

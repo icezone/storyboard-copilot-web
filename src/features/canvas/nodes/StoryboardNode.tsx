@@ -446,7 +446,7 @@ export const StoryboardNode = memo(({ id, data, selected, width, height }: Story
   const [exportPanelAnchor, setExportPanelAnchor] = useState<PanelAnchor | null>(null);
   const [isPackDoneDialogOpen, setIsPackDoneDialogOpen] = useState(false);
   const [packOutputDir, setPackOutputDir] = useState<string>('');
-  const [packRevealFilePath, setPackRevealFilePath] = useState<string>('');
+
 
   const orderedFrames = useMemo(
     () => [...data.frames].sort((a, b) => a.order - b.order),
@@ -943,7 +943,7 @@ export const StoryboardNode = memo(({ id, data, selected, width, height }: Story
       }
 
       setPackOutputDir(outputDir);
-      setPackRevealFilePath(firstSavedFilePath);
+
       setIsPackDoneDialogOpen(true);
     } catch (error) {
       setExportError(error instanceof Error ? error.message : '打包下载失败');

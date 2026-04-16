@@ -453,9 +453,6 @@ function resolveStoryboardAspectRatios(
   };
 }
 
-function generateFrameId(): string {
-  return `frame-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-}
 
 function toCssAspectRatio(aspectRatio: string): string {
   const [width = '1', height = '1'] = aspectRatio.split(':');
@@ -547,7 +544,7 @@ function generateGridImageDataUrl(
 }
 
 export const StoryboardGenNode = memo(({ id, data, selected, width, height }: StoryboardGenNodeProps) => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { zoom } = useViewport();
   const updateNodeInternals = useUpdateNodeInternals();
   const setSelectedNode = useCanvasStore((state) => state.setSelectedNode);
@@ -756,44 +753,6 @@ export const StoryboardGenNode = memo(({ id, data, selected, width, height }: St
     baseFrameLayout.nodeHeight,
     Math.round(height ?? baseFrameLayout.nodeHeight)
   );
-  const frameLayout = useMemo(() => {
-    const cols = Math.max(1, nodeData.gridCols);
-    const rows = Math.max(1, nodeData.gridRows);
-    const aspectRatio = Math.max(0.1, parseAspectRatio(frameAspectRatioValue));
-    const innerWidth = Math.max(120, resolvedNodeWidth - STORYBOARD_NODE_HORIZONTAL_PADDING_PX);
-    const availableGridHeight = Math.max(
-      72,
-      resolvedNodeHeight
-      - NODE_VERTICAL_PADDING_PX
-      - CONTROL_ROW_HEIGHT_PX
-      - CONTROL_ROW_MARGIN_BOTTOM_PX
-      - FRAME_GRID_MARGIN_BOTTOM_PX
-      - PARAM_ROW_HEIGHT_PX
-    );
-    const widthLimitedCellWidth =
-      (innerWidth - Math.max(0, cols - 1) * STORYBOARD_GRID_GAP_PX) / cols;
-    const heightLimitedCellHeight =
-      (availableGridHeight - Math.max(0, rows - 1) * FRAME_GRID_GAP_PX) / rows;
-    const heightLimitedCellWidth = heightLimitedCellHeight * aspectRatio;
-    const resolvedCellWidth = Math.floor(Math.min(widthLimitedCellWidth, heightLimitedCellWidth));
-    const cellWidth = Math.max(FRAME_CELL_MIN_WIDTH_PX, resolvedCellWidth);
-    const gridWidth = cols * cellWidth + Math.max(0, cols - 1) * STORYBOARD_GRID_GAP_PX;
-    const paramsRowWidth = Math.max(
-      STORYBOARD_PARAMS_ROW_WIDTH_PX,
-      Math.floor(innerWidth)
-    );
-
-    const cellHeight = Math.max(40, Math.floor(heightLimitedCellHeight));
-
-    return {
-      cellWidth,
-      cellHeight,
-      gridWidth,
-      paramsRowWidth,
-      cellAspectRatio: toCssAspectRatio(frameAspectRatioValue),
-    };
-  }, [frameAspectRatioValue, nodeData.gridCols, nodeData.gridRows, resolvedNodeHeight, resolvedNodeWidth]);
-
   useEffect(() => {
     frameDescriptionDraftsRef.current = frameDescriptionDrafts;
   }, [frameDescriptionDrafts]);
