@@ -492,7 +492,7 @@ export function LiveCanvasShowcase() {
       ref={sectionRef}
       id="canvas"
       className="scroll-reveal py-24 px-4 md:px-6"
-      style={{ background: 'var(--color-ink)' }}
+      style={{ background: 'var(--color-ink)', overflowX: 'hidden' }}
     >
       <div style={{ maxWidth: CANVAS_W + 48, margin: '0 auto' }}>
         {/* Heading */}
@@ -572,7 +572,7 @@ export function LiveCanvasShowcase() {
               onPointerUp={canvasScale < 1 ? undefined : stopDrag}
               onPointerLeave={canvasScale < 1 ? undefined : stopDrag}
               onPointerCancel={canvasScale < 1 ? undefined : stopDrag}
-              onClick={() => setSelectedNode(null)}
+              onClick={canvasScale < 1 ? undefined : () => setSelectedNode(null)}
               style={{
                 position: 'relative',
                 width: CANVAS_W,
