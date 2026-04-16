@@ -107,6 +107,14 @@ export function TemplateShowcase() {
       className="relative py-24 overflow-hidden"
       style={{ background: 'var(--color-surface)' }}
     >
+      {/* Top fade: black → transparent so previous section bleeds in smoothly */}
+      <div
+        className="pointer-events-none absolute top-0 inset-x-0 z-10"
+        style={{
+          height: 160,
+          background: 'linear-gradient(to bottom, var(--color-ink) 0%, transparent 100%)',
+        }}
+      />
       <div className="max-w-6xl mx-auto px-6">
         {/* Heading */}
         <div
