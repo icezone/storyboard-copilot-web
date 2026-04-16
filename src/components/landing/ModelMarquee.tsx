@@ -13,8 +13,9 @@ const MODEL_LOGOS = [
   { id: 'seed',       src: '/models/seed.svg',        key: 'seed' },
 ];
 
-// Duplicate for seamless loop — marquee-x animates translateX(0 → -50%)
-const LOGOS = [...MODEL_LOGOS, ...MODEL_LOGOS];
+// 4 copies for seamless loop — marquee-x animates translateX(0 → -50%)
+// 4 copies ensures the first half (2 copies) is wider than any screen
+const LOGOS = [...MODEL_LOGOS, ...MODEL_LOGOS, ...MODEL_LOGOS, ...MODEL_LOGOS];
 
 export function ModelMarquee() {
   const { t } = useTranslation();
