@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { useTranslation } from 'react-i18next';
 
 export function LandingFooter() {
@@ -43,7 +42,8 @@ export function LandingFooter() {
           {/* Brand */}
           <div className="flex-1 max-w-xs">
             <Link href="/" className="flex items-center gap-2.5 mb-3">
-              <Image src="/logo.svg" alt="IceZone Studio" width={28} height={28} className="rounded-lg" unoptimized />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo.svg" alt="IceZone Studio" width={28} height={28} className="rounded-lg" />
               <span className="text-white font-bold text-sm" style={{ fontFamily: 'var(--font-display)' }}>
                 IceZone Studio
               </span>

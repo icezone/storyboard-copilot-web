@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
 
@@ -63,14 +62,8 @@ export function LandingNav() {
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 group">
-          <Image
-            src="/logo.svg"
-            alt="IceZone Studio"
-            width={32}
-            height={32}
-            className="rounded-lg shrink-0"
-            unoptimized
-          />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.svg" alt="IceZone Studio" width={32} height={32} className="rounded-lg shrink-0" />
           <span
             className="text-white font-bold text-base tracking-tight"
             style={{ fontFamily: 'var(--font-display)' }}
