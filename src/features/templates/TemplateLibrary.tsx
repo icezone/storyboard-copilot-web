@@ -14,10 +14,18 @@ interface TemplateLibraryProps {
   isOpen: boolean;
   onClose: () => void;
   onUseTemplate: (template: WorkflowTemplate) => void;
-  onSaveTemplate: (data: { name: string; description: string; tags: string[]; isPublic: boolean }) => Promise<void>;
+  onSaveTemplate: (data: {
+    name: string;
+    description: string;
+    tags: string[];
+    isPublic: boolean;
+    thumbnailUrl?: string;
+    existingTemplateId?: string;
+  }) => Promise<void>;
   onImportJson: () => void;
   onExportJson: () => void;
   defaultTab?: TabKey;
+  canvasImages?: string[];
 }
 
 export function TemplateLibrary({
@@ -28,6 +36,7 @@ export function TemplateLibrary({
   onImportJson,
   onExportJson,
   defaultTab,
+  canvasImages,
 }: TemplateLibraryProps) {
   const { t } = useTranslation();
   const [tab, setTab] = useState<TabKey>(defaultTab ?? 'official');
@@ -111,9 +120,11 @@ export function TemplateLibrary({
     }
   }, [fetchTemplates]);
 
-  const handleSaveTemplateWrapper = useCallback(async (data: { name: string; description: string; tags: string[]; isPublic: boolean }) => {
+  const handleSaveTemplateWrapper = useCallback(async (data: {
+    name: string; description: string; tags: string[]; isPublic: boolean;
+    thumbnailUrl?: string; existingTemplateId?: string;
+  }) => {
     await onSaveTemplate(data);
-    setShowSaveDialog(false);
     await fetchTemplates();
   }, [onSaveTemplate, fetchTemplates]);
 
@@ -277,7 +288,7 @@ export function TemplateLibrary({
       <SaveTemplateDialog
         isOpen={showSaveDialog}
         onClose={() => setShowSaveDialog(false)}
-        canvasImages={[]}
+        canvasImages={canvasImages ?? []}
         onSave={handleSaveTemplateWrapper}
       />
     </>
