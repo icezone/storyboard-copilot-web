@@ -277,6 +277,7 @@ export function TemplateLibrary({
       <SaveTemplateDialog
         isOpen={showSaveDialog}
         onClose={() => setShowSaveDialog(false)}
+        canvasImages={[]}
         onSave={handleSaveTemplateWrapper}
       />
     </>
