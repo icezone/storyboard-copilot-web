@@ -50,6 +50,7 @@ import { VideoParamsControls } from '@/features/canvas/ui/VideoParamsControls';
 import { UiButton } from '@/components/ui';
 import { useCanvasStore } from '@/stores/canvasStore';
 import { useSettingsStore } from '@/stores/settingsStore';
+import { PresetPickerButton } from '@/features/preset-prompts/PresetPicker';
 
 type VideoGenNodeProps = NodeProps & {
   id: string;
@@ -146,6 +147,19 @@ function VideoGenNodeComponent({
   const [endFramePickerOpen, setEndFramePickerOpen] = useState(false);
   const apiKeys = useSettingsStore((state) => state.apiKeys);
   const videoDownloadPresetPaths = useSettingsStore((state) => state.videoDownloadPresetPaths);
+
+  const handlePresetInsert = (content: string) => {
+    const el = promptRef.current
+    if (!el) return
+    const start = el.selectionStart ?? el.value.length
+    const end = el.selectionEnd ?? el.value.length
+    const next = el.value.slice(0, start) + content + el.value.slice(end)
+    setPromptDraft(next)
+    requestAnimationFrame(() => {
+      el.focus()
+      el.setSelectionRange(start + content.length, start + content.length)
+    })
+  }
 
   const videoModels = useMemo(() => listVideoModels(), []);
   const selectedModel = useMemo(
@@ -707,7 +721,10 @@ function VideoGenNodeComponent({
             className="w-full flex items-center justify-between px-3 py-2 text-xs font-medium text-[var(--canvas-node-fg-muted)] hover:text-[var(--canvas-node-fg)] transition-colors"
           >
             <span>{t('node.videoGen.promptPlaceholder')}</span>
-            {promptCollapsed ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
+            <div className="flex items-center gap-1">
+              <PresetPickerButton onInsert={handlePresetInsert} />
+              {promptCollapsed ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
+            </div>
           </button>
           {!promptCollapsed && (
             <div className="relative p-2 border-t border-[var(--canvas-node-border)]" style={{ height: '150px' }}>
