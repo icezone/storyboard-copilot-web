@@ -1771,7 +1771,7 @@ function CanvasInner() {
 
     const data = await res.json();
     const { nodes: templateNodes, edges: templateEdges } = deserializeTemplateToCanvas(
-      data.templateData,
+      data.template_data,
       { x: 100, y: 100 }
     );
 
