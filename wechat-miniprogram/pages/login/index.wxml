@@ -1,0 +1,31 @@
+<view class="container">
+  <image class="logo" src="/assets/logo.png" mode="aspectFit" />
+  <text class="title">Login to IceZone Studio</text>
+
+  <block wx:if="{{status === 'idle' || status === 'error'}}">
+    <button class="login-btn" bindtap="handleLogin" disabled="{{!uuid}}">
+      Confirm Login
+    </button>
+  </block>
+
+  <block wx:if="{{status === 'loading'}}">
+    <view class="loading-container">
+      <view class="spinner" />
+      <text class="loading-text">Logging in...</text>
+    </view>
+  </block>
+
+  <block wx:if="{{status === 'success'}}">
+    <view class="success-container">
+      <text class="success-icon">✓</text>
+      <text class="success-text">Login successful! You may close this page.</text>
+    </view>
+  </block>
+
+  <block wx:if="{{status === 'error'}}">
+    <view class="error-container">
+      <text class="error-text">{{errorMsg}}</text>
+      <button class="retry-btn" bindtap="handleLogin">Retry</button>
+    </view>
+  </block>
+</view>

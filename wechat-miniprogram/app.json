@@ -1,0 +1,8 @@
+{
+  "pages": ["pages/login/index"],
+  "window": {
+    "navigationBarTitleText": "IceZone Login",
+    "navigationBarBackgroundColor": "#ffffff",
+    "backgroundColor": "#f5f5f5"
+  }
+}
