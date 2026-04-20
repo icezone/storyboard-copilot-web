@@ -94,6 +94,9 @@ describe('authStore', () => {
     expect(mockSignUp).toHaveBeenCalledWith({
       email: 'test@example.com',
       password: 'password123',
+      options: {
+        emailRedirectTo: expect.stringContaining('/callback'),
+      },
     });
     expect(result.error).toBeNull();
   });
