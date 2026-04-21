@@ -39,9 +39,6 @@ CREATE TABLE IF NOT EXISTS public.user_key_capabilities (
   UNIQUE(key_id, logical_model_id)
 );
 
-CREATE INDEX IF NOT EXISTS idx_capabilities_key
-  ON public.user_key_capabilities(key_id);
-
 ALTER TABLE public.user_key_capabilities ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users read own key capabilities"
@@ -49,7 +46,7 @@ CREATE POLICY "Users read own key capabilities"
   USING (
     EXISTS (
       SELECT 1 FROM public.user_api_keys k
-      WHERE k.id = user_key_capabilities.key_id AND k.user_id = auth.uid()
+      WHERE k.id = user_key_capabilities.key_id AND k.user_id = (SELECT auth.uid())
     )
   );
 
@@ -58,7 +55,7 @@ CREATE POLICY "Users insert own key capabilities"
   WITH CHECK (
     EXISTS (
       SELECT 1 FROM public.user_api_keys k
-      WHERE k.id = user_key_capabilities.key_id AND k.user_id = auth.uid()
+      WHERE k.id = user_key_capabilities.key_id AND k.user_id = (SELECT auth.uid())
     )
   );
 
@@ -67,7 +64,13 @@ CREATE POLICY "Users update own key capabilities"
   USING (
     EXISTS (
       SELECT 1 FROM public.user_api_keys k
-      WHERE k.id = user_key_capabilities.key_id AND k.user_id = auth.uid()
+      WHERE k.id = user_key_capabilities.key_id AND k.user_id = (SELECT auth.uid())
+    )
+  )
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM public.user_api_keys k
+      WHERE k.id = user_key_capabilities.key_id AND k.user_id = (SELECT auth.uid())
     )
   );
 
@@ -76,7 +79,7 @@ CREATE POLICY "Users delete own key capabilities"
   USING (
     EXISTS (
       SELECT 1 FROM public.user_api_keys k
-      WHERE k.id = user_key_capabilities.key_id AND k.user_id = auth.uid()
+      WHERE k.id = user_key_capabilities.key_id AND k.user_id = (SELECT auth.uid())
     )
   );
 
@@ -94,7 +97,7 @@ CREATE TABLE IF NOT EXISTS public.model_call_history (
   latency_ms integer,
   error_code text,
   cost_estimate_cents integer,
-  created_at timestamptz DEFAULT now()
+  created_at timestamptz NOT NULL DEFAULT now()
 );
 
 CREATE INDEX IF NOT EXISTS idx_history_user_model_time
@@ -107,8 +110,8 @@ ALTER TABLE public.model_call_history ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users manage own call history"
   ON public.model_call_history FOR ALL
-  USING (auth.uid() = user_id)
-  WITH CHECK (auth.uid() = user_id);
+  USING ((SELECT auth.uid()) = user_id)
+  WITH CHECK ((SELECT auth.uid()) = user_id);
 
 -- ============================================================================
 -- 4. routing_preferences(三层:模型级 / 场景级)
@@ -125,15 +128,12 @@ CREATE TABLE IF NOT EXISTS public.routing_preferences (
   UNIQUE(user_id, level, target)
 );
 
-CREATE INDEX IF NOT EXISTS idx_routing_prefs_user
-  ON public.routing_preferences(user_id);
-
 ALTER TABLE public.routing_preferences ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users manage own routing prefs"
   ON public.routing_preferences FOR ALL
-  USING (auth.uid() = user_id)
-  WITH CHECK (auth.uid() = user_id);
+  USING ((SELECT auth.uid()) = user_id)
+  WITH CHECK ((SELECT auth.uid()) = user_id);
 
 -- ============================================================================
 -- 5. pg_cron 定期清理(30 天保留)
@@ -149,5 +149,7 @@ BEGIN
       '0 3 * * *',
       $cron$ DELETE FROM public.model_call_history WHERE created_at < now() - interval '30 days' $cron$
     );
+  ELSE
+    RAISE WARNING 'pg_cron extension not installed; model_call_history 30-day retention will NOT be enforced';
   END IF;
 END $$;
