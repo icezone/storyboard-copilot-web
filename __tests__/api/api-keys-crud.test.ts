@@ -1,6 +1,27 @@
 // @vitest-environment node
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
+const mockList = vi.hoisted(() => ({
+  rows: [
+    {
+      id: 'k1',
+      provider: 'custom:a1b2c3',
+      encrypted_key: 'bm9wZQ==', // decrypt will throw → masked placeholder
+      iv: 'AAAAAAAAAAAAAAAA',
+      key_index: 0,
+      status: 'active',
+      base_url: 'https://api.example.com/v1',
+      protocol: 'openai-compat',
+      display_name: 'My Aggregator',
+      last_verified_at: '2026-04-22T10:00:00Z',
+      last_error: null,
+      last_used_at: null,
+      error_count: 0,
+      created_at: '2026-04-21T00:00:00Z',
+    },
+  ],
+}))
+
 const mock = vi.hoisted(() => {
   const upsert = vi.fn().mockResolvedValue({ error: null })
   const existingSelect = vi.fn().mockResolvedValue({ data: [], error: null })
@@ -13,13 +34,24 @@ vi.mock('@/lib/supabase/server', () => ({
     from: (_table: string) => ({
       upsert: mock.upsert,
       select: () => ({
-        eq: () => ({
-          eq: () => ({
-            order: () => ({
-              limit: () => mock.existingSelect(),
-            }),
-          }),
-        }),
+        eq: (col: string, _val: unknown) => {
+          if (col === 'user_id') {
+            return {
+              // POST path: existing key count lookup
+              eq: () => ({
+                order: () => ({
+                  limit: () => mock.existingSelect(),
+                }),
+              }),
+              // GET path: list all keys sorted by provider, key_index
+              order: () => ({
+                order: () =>
+                  Promise.resolve({ data: mockList.rows, error: null }),
+              }),
+            }
+          }
+          return {}
+        },
       }),
     }),
   }),
@@ -116,5 +148,21 @@ describe('POST /api/settings/api-keys', () => {
     expect(res.status).toBe(200)
     const row = mock.upsert.mock.calls[0][0]
     expect(row.protocol).toBe('native')
+  })
+
+  it('GET 返回 base_url / protocol / display_name / last_verified_at', async () => {
+    const { GET } = await import('@/app/api/settings/api-keys/route')
+    const res = await GET()
+    const body = await res.json()
+    expect(res.status).toBe(200)
+    expect(Array.isArray(body)).toBe(true)
+    expect(body[0]).toMatchObject({
+      id: 'k1',
+      provider: 'custom:a1b2c3',
+      base_url: 'https://api.example.com/v1',
+      protocol: 'openai-compat',
+      display_name: 'My Aggregator',
+      last_verified_at: '2026-04-22T10:00:00Z',
+    })
   })
 })

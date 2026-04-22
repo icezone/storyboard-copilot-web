@@ -85,7 +85,7 @@ export async function GET() {
 
   const { data, error } = await supabase
     .from('user_api_keys')
-    .select('id, provider, encrypted_key, iv, key_index, status, last_error, last_used_at, error_count, created_at')
+    .select('id, provider, encrypted_key, iv, key_index, status, last_error, last_used_at, error_count, created_at, base_url, protocol, display_name, last_verified_at')
     .eq('user_id', user.id)
     .order('provider')
     .order('key_index')
@@ -109,6 +109,10 @@ export async function GET() {
       last_used_at: row.last_used_at,
       error_count: row.error_count ?? 0,
       created_at: row.created_at,
+      base_url: row.base_url ?? null,
+      protocol: row.protocol ?? 'native',
+      display_name: row.display_name ?? null,
+      last_verified_at: row.last_verified_at ?? null,
     }
   })
 
