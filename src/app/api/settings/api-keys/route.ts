@@ -3,7 +3,9 @@ import { createClient, getAuthUser } from '@/lib/supabase/server'
 import { createCipheriv, createDecipheriv, randomBytes, scryptSync } from 'crypto'
 import { z } from 'zod'
 
-const SUPPORTED_PROVIDERS = ['kie', 'ppio', 'grsai', 'fal', 'openai', 'anthropic'] as const
+const BUILT_IN_PROVIDERS = ['kie', 'ppio', 'grsai', 'fal', 'openai', 'anthropic'] as const
+
+const CUSTOM_PREFIX = 'custom:'
 
 function getEncryptionKey(): Buffer {
   const secret = process.env.ENCRYPTION_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? 'dev-fallback-key'
@@ -35,19 +37,33 @@ function maskKey(plaintext: string): string {
   return plaintext.slice(0, 4) + '••••' + plaintext.slice(-4)
 }
 
-const addKeySchema = z.object({
-  provider: z.enum(SUPPORTED_PROVIDERS),
-  key: z.string().min(8),
-  key_index: z.number().int().min(0).optional(),
-})
+const addKeySchema = z
+  .object({
+    provider: z.string().min(1),
+    key: z.string().min(8),
+    key_index: z.number().int().min(0).optional(),
+    base_url: z.string().url().optional(),
+    protocol: z.enum(['native', 'openai-compat']).optional(),
+    display_name: z.string().max(80).optional(),
+  })
+  .refine(
+    (v) =>
+      v.provider.startsWith(CUSTOM_PREFIX) ||
+      (BUILT_IN_PROVIDERS as readonly string[]).includes(v.provider),
+    { message: 'provider must be built-in or start with "custom:"', path: ['provider'] }
+  )
+  .refine(
+    (v) => !v.provider.startsWith(CUSTOM_PREFIX) || Boolean(v.base_url),
+    { message: 'custom provider requires base_url', path: ['base_url'] }
+  )
 
 const deleteKeySchema = z.object({
-  provider: z.enum(SUPPORTED_PROVIDERS),
+  provider: z.string(),
   key_index: z.number().int().min(0).optional(),
 })
 
 const updateStatusSchema = z.object({
-  provider: z.enum(SUPPORTED_PROVIDERS),
+  provider: z.string(),
   key_index: z.number().int().min(0),
   status: z.enum(['active', 'exhausted', 'invalid', 'rate_limited']),
 })
@@ -117,6 +133,8 @@ export async function POST(request: Request) {
     keyIndex = existing && existing.length > 0 ? (existing[0].key_index ?? 0) + 1 : 0
   }
 
+  const protocol = parsed.data.protocol ?? (parsed.data.base_url ? 'openai-compat' : 'native')
+
   const { error } = await supabase
     .from('user_api_keys')
     .upsert(
@@ -126,9 +144,12 @@ export async function POST(request: Request) {
         encrypted_key: encrypted,
         iv,
         key_index: keyIndex,
-        status: 'active',
+        status: 'unverified',
         error_count: 0,
         last_error: null,
+        base_url: parsed.data.base_url,
+        protocol,
+        display_name: parsed.data.display_name,
         updated_at: new Date().toISOString(),
       },
       { onConflict: 'user_id,provider,key_index' }
