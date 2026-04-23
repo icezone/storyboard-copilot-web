@@ -390,11 +390,11 @@ function VideoAnalysisNodeComponent({
           <select value={data.minSceneDurationMs}
             onChange={(e) => { e.stopPropagation(); handleMinDurationChange(parseInt(e.target.value, 10)); }}
             onMouseDown={(e) => e.stopPropagation()}
-            className="nodrag rounded-md border border-[rgba(15,23,42,0.15)] bg-bg-dark/45 px-2 py-0.5 text-xs text-[var(--canvas-node-fg)] outline-none dark:border-[rgba(255,255,255,0.1)]">
-            <option value={200}>200ms</option>
-            <option value={500}>500ms</option>
-            <option value={1000}>1s</option>
-            <option value={2000}>2s</option>
+            className="nodrag rounded-md border border-[rgba(15,23,42,0.15)] bg-[var(--canvas-node-bg)] px-2 py-0.5 text-xs text-[var(--canvas-node-fg)] outline-none dark:border-[rgba(255,255,255,0.1)]">
+            <option className="bg-[var(--canvas-node-bg)] text-[var(--canvas-node-fg)]" value={200}>200ms</option>
+            <option className="bg-[var(--canvas-node-bg)] text-[var(--canvas-node-fg)]" value={500}>500ms</option>
+            <option className="bg-[var(--canvas-node-bg)] text-[var(--canvas-node-fg)]" value={1000}>1s</option>
+            <option className="bg-[var(--canvas-node-bg)] text-[var(--canvas-node-fg)]" value={2000}>2s</option>
           </select>
         </div>
 
