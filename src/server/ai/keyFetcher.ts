@@ -70,10 +70,10 @@ export async function loadUserKeysForProvider(
 }
 
 /**
- * 暴露解密函数供 capability prober 测试使用。
- * 不重命名原有 decrypt 函数,以免影响其它调用者。
+ * 对外暴露的解密工具,供 capability prober 等运行时调用。
+ * 保留原有局部 decrypt 函数不变,避免影响其它调用者。
  */
-export function decryptKeyForTesting(encryptedBase64: string, ivBase64: string): string {
+export function decryptApiKey(encryptedBase64: string, ivBase64: string): string {
   return decrypt(encryptedBase64, ivBase64)
 }
 
