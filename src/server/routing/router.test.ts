@@ -1,5 +1,6 @@
 // @vitest-environment node
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import type { SupabaseClient } from '@supabase/supabase-js'
 import type { KeyCandidate, RouteRequest } from '@/features/routing/application/types'
 
 // ---- mock 子模块 ----
@@ -21,7 +22,8 @@ const fakeCandidate: KeyCandidate = {
 }
 
 function makeSupabase(prefRows: unknown[] = []) {
-  return {
+  const insertMock = vi.fn().mockResolvedValue({ error: null })
+  const supa = {
     from: (table: string) => {
       if (table === 'routing_preferences') {
         return {
@@ -35,11 +37,12 @@ function makeSupabase(prefRows: unknown[] = []) {
         }
       }
       if (table === 'model_call_history') {
-        return { insert: vi.fn().mockResolvedValue({ error: null }) }
+        return { insert: insertMock }
       }
       return {}
     },
   }
+  return { supa: supa as unknown as SupabaseClient, insertMock }
 }
 
 describe('route()', () => {
@@ -50,7 +53,7 @@ describe('route()', () => {
   it('无候选时返回 NO_CANDIDATES error', async () => {
     vi.mocked(findCandidates).mockResolvedValue([])
     const req: RouteRequest = {
-      supabase: makeSupabase() as never,
+      supabase: makeSupabase().supa,
       userId: 'u1',
       logicalModelId: 'nano-banana-2',
       scenario: 'image',
@@ -63,8 +66,9 @@ describe('route()', () => {
 
   it('首次调用成功,无 toast', async () => {
     const callFn = vi.fn().mockResolvedValue({ imageUrl: 'http://img' })
+    const { supa, insertMock } = makeSupabase()
     const req: RouteRequest = {
-      supabase: makeSupabase() as never,
+      supabase: supa,
       userId: 'u1',
       logicalModelId: 'nano-banana-2',
       scenario: 'image',
@@ -76,6 +80,8 @@ describe('route()', () => {
       expect(result.toast).toBeUndefined()
       expect(result.keyId).toBe('k1')
     }
+    expect(insertMock).toHaveBeenCalledOnce()
+    expect(insertMock.mock.calls[0][0]).toMatchObject({ status: 'success' })
   })
 
   it('首选失败 fallback 到第二候选,返回 toast', async () => {
@@ -85,7 +91,7 @@ describe('route()', () => {
       .mockRejectedValueOnce(new Error('k1 failed'))
       .mockResolvedValueOnce({ imageUrl: 'http://fallback-img' })
     const req: RouteRequest = {
-      supabase: makeSupabase() as never,
+      supabase: makeSupabase().supa,
       userId: 'u1',
       logicalModelId: 'nano-banana-2',
       scenario: 'image',
@@ -103,7 +109,7 @@ describe('route()', () => {
   it('全部候选失败返回 ALL_CANDIDATES_FAILED', async () => {
     const callFn = vi.fn().mockRejectedValue(new Error('always fails'))
     const req: RouteRequest = {
-      supabase: makeSupabase() as never,
+      supabase: makeSupabase().supa,
       userId: 'u1',
       logicalModelId: 'nano-banana-2',
       scenario: 'image',
@@ -120,7 +126,7 @@ describe('route()', () => {
     const prefRows = [{ level: 'model', target: 'nano-banana-2', preferred_key_id: 'k1' }]
     const callFn = vi.fn().mockResolvedValue({ imageUrl: 'http://img' })
     const req: RouteRequest = {
-      supabase: makeSupabase(prefRows) as never,
+      supabase: makeSupabase(prefRows).supa,
       userId: 'u1',
       logicalModelId: 'nano-banana-2',
       scenario: 'image',

@@ -79,10 +79,16 @@ async function applyPreferences(
 
   if (!data || data.length === 0) return scored
 
+  // 过滤出合法的偏好行,防止 schema 变化产生 undefined key
+  const validPrefs = (data as Array<Record<string, unknown>>).filter(
+    p => typeof p['level'] === 'string' && typeof p['target'] === 'string' && p['preferred_key_id']
+  )
+
   const prefMap = new Map<string, string>(
-    (data as Array<{ level: string; target: string; preferred_key_id: string }>).map(p =>
-      [`${p.level}:${p.target}`, p.preferred_key_id]
-    )
+    validPrefs.map(p => [
+      `${p['level']}:${p['target']}`,
+      p['preferred_key_id'] as string,
+    ])
   )
 
   const preferredKeyId =
@@ -105,7 +111,7 @@ async function writeHistory(
   supabase: SupabaseClient,
   entry: CallHistoryEntry
 ): Promise<void> {
-  await supabase.from('model_call_history').insert({
+  const { error } = await supabase.from('model_call_history').insert({
     user_id: entry.userId,
     key_id: entry.keyId,
     logical_model_id: entry.logicalModelId,
@@ -115,4 +121,6 @@ async function writeHistory(
     error_code: entry.errorCode ?? null,
     cost_estimate_cents: entry.costEstimateCents ?? null,
   })
+  if (error) console.error('[writeHistory] insert failed:', error.message)
+  // 不中断主流程,历史写入失败不应影响用户请求
 }
