@@ -1,5 +1,6 @@
 // src/server/routing/scoring.ts
 import type { KeyCandidate } from '@/features/routing/application/types'
+import type { SupabaseClient } from '@supabase/supabase-js'
 
 interface HistoryRow {
   key_id: string
@@ -30,8 +31,13 @@ const MAX_LATENCY_CAP = 10_000
 export function computeScores(
   candidates: KeyCandidate[],
   history: HistoryRow[],
-  _logicalModelId: string
+  _logicalModelId: string  // 预留:未来按 model 差异化默认成本;当前使用固定默认值
 ): KeyCandidate[] {
+  // 单候选:归一化无意义,直接给满分
+  if (candidates.length === 1) {
+    return [{ ...candidates[0], score: 1.0 }]
+  }
+
   const grouped = new Map<string, HistoryRow[]>()
   for (const row of history) {
     const arr = grouped.get(row.key_id) ?? []
@@ -70,27 +76,11 @@ export function computeScores(
 
 /** 从 DB 查询指定 user + logical_model 的最近 30 天历史(最多 50 条)。 */
 export async function fetchHistory(
-  supabase: unknown,
+  supabase: SupabaseClient,
   userId: string,
   logicalModelId: string
 ): Promise<HistoryRow[]> {
-  const db = supabase as {
-    from: (t: string) => {
-      select: (cols: string) => {
-        eq: (col: string, val: string) => {
-          eq: (col: string, val: string) => {
-            gte: (col: string, val: string) => {
-              order: (col: string, opts: object) => {
-                limit: (n: number) => Promise<{ data: HistoryRow[] | null; error: { message: string } | null }>
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-
-  const { data, error } = await db
+  const { data, error } = await supabase
     .from('model_call_history')
     .select('key_id, status, latency_ms, cost_estimate_cents')
     .eq('user_id', userId)
@@ -100,5 +90,5 @@ export async function fetchHistory(
     .limit(50)
 
   if (error) throw new Error(error.message)
-  return data ?? []
+  return ((data ?? []) as HistoryRow[])
 }
