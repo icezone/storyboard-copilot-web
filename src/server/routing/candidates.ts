@@ -28,18 +28,16 @@ export async function findCandidates(
   if (error) throw new Error(error.message)
 
   return (data ?? []).map((row: Record<string, unknown>) => {
-    // 支持 flat(mock)和 nested(真实 Supabase JOIN)两种结构
-    const nested = row['user_api_keys'] as Record<string, unknown> | undefined
-    const src = nested ?? row
+    const k = row['user_api_keys'] as Record<string, unknown>
     return {
-      keyId: (row['key_id'] ?? src['id']) as string,
-      provider: src['provider'] as string,
-      displayName: (src['display_name'] as string | null) ?? null,
-      status: src['status'] as 'active' | 'unverified',
-      baseUrl: (src['base_url'] as string | null) ?? null,
-      protocol: src['protocol'] as 'native' | 'openai-compat',
-      encryptedKey: src['encrypted_key'] as string,
-      iv: src['iv'] as string,
+      keyId: row['key_id'] as string,
+      provider: k['provider'] as string,
+      displayName: (k['display_name'] as string | null) ?? null,
+      status: k['status'] as 'active' | 'unverified',
+      baseUrl: (k['base_url'] as string | null) ?? null,
+      protocol: k['protocol'] as 'native' | 'openai-compat',
+      encryptedKey: k['encrypted_key'] as string,
+      iv: k['iv'] as string,
       score: 0,
     }
   })
