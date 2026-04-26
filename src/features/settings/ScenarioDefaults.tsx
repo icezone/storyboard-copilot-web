@@ -33,13 +33,16 @@ export function ScenarioDefaults() {
 
   async function save(scenario: string, keyId: string) {
     setSaving(scenario)
-    await fetch('/api/settings/routing-preferences', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ level: 'scenario', target: scenario, preferred_key_id: keyId || null }),
-    })
-    setPrefs(p => ({ ...p, [scenario]: keyId }))
-    setSaving(null)
+    try {
+      await fetch('/api/settings/routing-preferences', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ level: 'scenario', target: scenario, preferred_key_id: keyId || null }),
+      })
+      setPrefs(p => ({ ...p, [scenario]: keyId }))
+    } finally {
+      setSaving(null)
+    }
   }
 
   return (

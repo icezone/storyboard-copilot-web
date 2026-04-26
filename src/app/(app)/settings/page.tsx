@@ -1,6 +1,5 @@
 'use client';
 
-import { Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
 import { useThemeStore } from '@/stores/themeStore';
@@ -112,12 +111,10 @@ export default function SettingsPage() {
 
         {/* Smart Routing Preferences */}
         <SectionCard title="智能路由偏好">
-          <Suspense fallback={null}>
-            <ScenarioDefaults />
-            <div className="mt-4 border-t border-gray-100 pt-4">
-              <ModelPreferences />
-            </div>
-          </Suspense>
+          <ScenarioDefaults />
+          <div className="mt-4 border-t border-gray-100 pt-4">
+            <ModelPreferences />
+          </div>
         </SectionCard>
 
         {/* Preset Prompts */}

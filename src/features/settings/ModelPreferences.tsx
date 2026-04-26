@@ -26,13 +26,16 @@ export function ModelPreferences() {
 
   async function save(model: string, keyId: string) {
     setSaving(model)
-    await fetch('/api/settings/routing-preferences', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ level: 'model', target: model, preferred_key_id: keyId || null }),
-    })
-    setPrefs(p => ({ ...p, [model]: keyId }))
-    setSaving(null)
+    try {
+      await fetch('/api/settings/routing-preferences', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ level: 'model', target: model, preferred_key_id: keyId || null }),
+      })
+      setPrefs(p => ({ ...p, [model]: keyId }))
+    } finally {
+      setSaving(null)
+    }
   }
 
   return (
