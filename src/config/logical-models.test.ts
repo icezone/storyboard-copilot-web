@@ -3,6 +3,7 @@ import {
   listLogicalModels,
   getLogicalModel,
   LOGICAL_MODELS,
+  mapToCanvasModelId,
 } from './logical-models'
 
 describe('logical-models', () => {
@@ -40,5 +41,32 @@ describe('logical-models', () => {
   it('每个条目的 id 唯一', () => {
     const ids = LOGICAL_MODELS.map((m) => m.id)
     expect(new Set(ids).size).toBe(ids.length)
+  })
+})
+
+describe('mapToCanvasModelId', () => {
+  const canvasIds = [
+    'kie/nano-banana-2',
+    'fal/nano-banana-2',
+    'grsai/nano-banana-2',
+    'ppio/gemini-3.1-flash',
+    'kling/kling-3.0',
+  ]
+
+  it('优先返回 kie provider 的 canvas 模型 ID', () => {
+    expect(mapToCanvasModelId('nano-banana-2', canvasIds)).toBe('kie/nano-banana-2')
+  })
+
+  it('kie 不可用时退回 fal', () => {
+    const ids = canvasIds.filter((id) => !id.startsWith('kie/'))
+    expect(mapToCanvasModelId('nano-banana-2', ids)).toBe('fal/nano-banana-2')
+  })
+
+  it('无匹配时返回 null', () => {
+    expect(mapToCanvasModelId('sora2-pro', canvasIds)).toBeNull()
+  })
+
+  it('支持 provider/model 直接匹配', () => {
+    expect(mapToCanvasModelId('gemini-3.1-flash', canvasIds)).toBe('ppio/gemini-3.1-flash')
   })
 })
