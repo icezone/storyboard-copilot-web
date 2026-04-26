@@ -22,7 +22,7 @@ export function FallbackToast({ payload, onDismiss }: FallbackToastProps) {
       {showDetail && (
         <div className="mt-1 flex flex-col gap-0.5 text-xs text-gray-300">
           {payload.fallbackChain.map((a, i) => (
-            <div key={i} className="flex items-center gap-1">
+            <div key={a.keyId ?? i} className="flex items-center gap-1">
               <span>{a.status === 'success' ? '✓' : '✗'}</span>
               <span>{a.displayName ?? a.keyId}</span>
               {a.latencyMs != null && <span className="opacity-60">{a.latencyMs}ms</span>}

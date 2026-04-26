@@ -58,6 +58,11 @@ export async function POST(request: NextRequest) {
   // --- 智能路由路径(logicalModelId) ---
   const logicalModelId = body['logicalModelId']
   if (typeof logicalModelId === 'string' && logicalModelId) {
+    // 校验 projectId
+    if (typeof projectId !== 'string' || !projectId) {
+      return NextResponse.json({ error: 'projectId is required' }, { status: 400 })
+    }
+
     const genReq = {
       modelId: logicalModelId,
       prompt: prompt as string,
@@ -92,7 +97,10 @@ export async function POST(request: NextRequest) {
     if (isRoutingError(decision)) {
       return NextResponse.json({ error: decision.code, suggestion: decision.suggestion }, { status: 503 })
     }
-    return NextResponse.json({ ...(decision.result as object), toast: decision.toast ?? null })
+    const resultData = typeof decision.result === 'object' && decision.result !== null
+      ? decision.result as Record<string, unknown>
+      : { result: decision.result }
+    return NextResponse.json({ ...resultData, toast: decision.toast ?? null })
   }
   // --- 智能路由路径结束 ---
 
