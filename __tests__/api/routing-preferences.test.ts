@@ -20,7 +20,7 @@ vi.mock('@/lib/supabase/server', () => ({
       select: () => ({ eq: () => Promise.resolve({ data: mock.prefRows, error: null }) }),
     }),
   }),
-  getAuthUser: async (supabase: any) => mock.authUser,
+  getAuthUser: async (_supabase: unknown) => mock.authUser,
 }))
 
 describe('routing-preferences API', () => {
