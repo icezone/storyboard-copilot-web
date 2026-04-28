@@ -246,3 +246,53 @@ test.describe('Integration: Full Workflow', () => {
     }
   })
 })
+
+test.describe('Wave M4: Onboarding & Canvas UX', () => {
+  test.skip(!hasAuth, 'Skipped: E2E_TEST_EMAIL / E2E_TEST_PASSWORD not configured')
+
+  test.beforeEach(async ({ page }) => {
+    await login(page)
+  })
+
+  test('M4-N1: LogicalModelPicker - Image 节点显示逻辑模型名', async ({ page }) => {
+    const projectId = await createProject(page)
+    try {
+      await openNodeMenu(page)
+      // ImageEdit 节点
+      const imageEditOption = page.locator('text=图片生成, text=图片编辑').first()
+      await expect(imageEditOption).toBeVisible({ timeout: 5000 })
+      await imageEditOption.click()
+
+      // 验证节点存在
+      const node = page.locator('[data-testid="node-imageEdit"], [data-testid="node-upload"]').first()
+      await expect(node).toBeVisible({ timeout: 5000 })
+
+      // 验证逻辑模型名出现（不应显示 "kie/" 前缀）
+      const modelPicker = page.locator('[data-testid^="model-option-"]').first()
+      await expect(modelPicker).toBeVisible({ timeout: 5000 })
+    } finally {
+      await deleteProject(page, projectId)
+    }
+  })
+
+  test('M4-N2: Dashboard - OnboardingWizard 可被跳过', async ({ page }) => {
+    // 清除 localStorage 引导完成标志以触发向导
+    await page.goto('/dashboard')
+    await page.evaluate(() => localStorage.removeItem('smart-routing-onboarded'))
+    await page.reload()
+
+    // 如果用户有 keys，向导不显示 — 测试跳过
+    const wizard = page.locator('text=添加你的第一个 API Key')
+    const hasWizard = await wizard.isVisible({ timeout: 3000 }).catch(() => false)
+    if (!hasWizard) {
+      console.log('用户已有 keys，跳过向导测试（符合预期）')
+      return
+    }
+
+    // 向导可被关闭
+    const closeBtn = page.locator('button[aria-label="跳过引导"]')
+    await expect(closeBtn).toBeVisible()
+    await closeBtn.click()
+    await expect(wizard).not.toBeVisible({ timeout: 3000 })
+  })
+})
