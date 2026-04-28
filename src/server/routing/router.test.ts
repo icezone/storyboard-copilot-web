@@ -3,15 +3,22 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { KeyCandidate, RouteRequest } from '@/features/routing/application/types'
 
-// ---- mock 子模块 ----
-vi.mock('./candidates', () => ({ findCandidates: vi.fn() }))
-vi.mock('./scoring', () => ({
+// ---- hoisted mock state ----
+const mocks = vi.hoisted(() => ({
+  findCandidates: vi.fn(),
   computeScores: vi.fn((candidates: KeyCandidate[]) => candidates.map(c => ({ ...c, score: 0.5 }))),
   fetchHistory: vi.fn(async () => []),
+  decryptApiKey: vi.fn(() => 'decrypted-key'),
 }))
-vi.mock('@/server/ai/keyFetcher', () => ({ decryptApiKey: vi.fn(() => 'decrypted-key') }))
 
-import { findCandidates } from './candidates'
+// ---- mock 子模块 ----
+vi.mock('@/server/routing/candidates', () => ({ findCandidates: mocks.findCandidates }))
+vi.mock('@/server/routing/scoring', () => ({
+  computeScores: mocks.computeScores,
+  fetchHistory: mocks.fetchHistory,
+}))
+vi.mock('@/server/ai/keyFetcher', () => ({ decryptApiKey: mocks.decryptApiKey }))
+
 import { route } from './router'
 import { isRoutingError } from '@/features/routing/application/types'
 
@@ -47,11 +54,12 @@ function makeSupabase(prefRows: unknown[] = []) {
 
 describe('route()', () => {
   beforeEach(() => {
-    vi.mocked(findCandidates).mockReset().mockResolvedValue([fakeCandidate])
+    mocks.findCandidates.mockReset()
+    mocks.findCandidates.mockResolvedValue([fakeCandidate])
   })
 
   it('无候选时返回 NO_CANDIDATES error', async () => {
-    vi.mocked(findCandidates).mockResolvedValue([])
+    mocks.findCandidates.mockResolvedValue([])
     const req: RouteRequest = {
       supabase: makeSupabase().supa,
       userId: 'u1',
@@ -86,7 +94,7 @@ describe('route()', () => {
 
   it('首选失败 fallback 到第二候选,返回 toast', async () => {
     const k2: KeyCandidate = { ...fakeCandidate, keyId: 'k2', displayName: 'FAL Key', provider: 'fal' }
-    vi.mocked(findCandidates).mockResolvedValue([fakeCandidate, k2])
+    mocks.findCandidates.mockResolvedValue([fakeCandidate, k2])
     const callFn = vi.fn()
       .mockRejectedValueOnce(new Error('k1 failed'))
       .mockResolvedValueOnce({ imageUrl: 'http://fallback-img' })
@@ -122,7 +130,7 @@ describe('route()', () => {
 
   it('model 级偏好存在时优先选择偏好 key', async () => {
     const k2: KeyCandidate = { ...fakeCandidate, keyId: 'k2', provider: 'fal', score: 0.9 }
-    vi.mocked(findCandidates).mockResolvedValue([fakeCandidate, k2])
+    mocks.findCandidates.mockResolvedValue([fakeCandidate, k2])
     const prefRows = [{ level: 'model', target: 'nano-banana-2', preferred_key_id: 'k1' }]
     const callFn = vi.fn().mockResolvedValue({ imageUrl: 'http://img' })
     const req: RouteRequest = {
