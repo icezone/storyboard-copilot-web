@@ -18,6 +18,8 @@ import {
 } from 'lucide-react';
 import { TemplateLibrary } from '@/features/templates/TemplateLibrary';
 import type { WorkflowTemplate } from '@/features/templates/types';
+import { OnboardingWizard } from '@/features/onboarding/OnboardingWizard';
+import { useOnboardingState } from '@/features/onboarding/useOnboardingState';
 
 export const dynamic = 'force-dynamic';
 
@@ -286,13 +288,21 @@ export default function DashboardPage() {
   const [deleteTarget, setDeleteTarget] = useState<Project | null>(null);
   const [templateLibraryOpen, setTemplateLibraryOpen] = useState(false);
   const [templateLibraryTab, setTemplateLibraryTab] = useState<'official' | 'shared'>('official');
+  const [keyCount, setKeyCount] = useState(0)
 
   const loadProjects = useCallback(async () => {
     try {
-      const res = await fetch('/api/projects');
-      if (!res.ok) throw new Error('Failed to load');
-      const data = await res.json() as Project[];
+      const [projectsRes, capRes] = await Promise.all([
+        fetch('/api/projects'),
+        fetch('/api/settings/capabilities').catch(() => null),
+      ]);
+      if (!projectsRes.ok) throw new Error('Failed to load');
+      const data = await projectsRes.json() as Project[];
       setProjects(data);
+      if (capRes?.ok) {
+        const cap = (await capRes.json()) as { all: string[] };
+        setKeyCount(cap.all.length > 0 ? 1 : 0);
+      }
     } catch {
       setError(t('dashboard.loadError'));
     } finally {
@@ -303,6 +313,8 @@ export default function DashboardPage() {
   useEffect(() => {
     void loadProjects();
   }, [loadProjects]);
+
+  const { show: showOnboarding, dismiss: dismissOnboarding } = useOnboardingState(keyCount);
 
   async function handleCreate() {
     setCreating(true);
@@ -409,6 +421,7 @@ export default function DashboardPage() {
 
   return (
     <div className="mx-auto max-w-6xl">
+      <OnboardingWizard show={showOnboarding} onDismiss={dismissOnboarding} />
       {/* Error banner */}
       {error && (
         <div className="mb-6 rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400">
