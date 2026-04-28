@@ -38,7 +38,7 @@ export function OnboardingWizard({ show, onDismiss }: Props) {
     const data = (await res.json()) as { id: string }
     setAddedKeyId(data.id)
     // 后台触发探测，不阻塞用户
-    void fetch(`/api/settings/api-keys/${data.id}/probe`, { method: 'POST' })
+    void fetch(`/api/settings/api-keys/${data.id}/probe`, { method: 'POST' }).catch(() => {})
     setStep(2)
   }
 
