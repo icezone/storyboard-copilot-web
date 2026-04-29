@@ -713,19 +713,22 @@ function VideoGenNodeComponent({
       <div className="flex flex-col gap-2">
         {/* Prompt Input */}
         <div className="rounded-lg border border-[var(--canvas-node-border)] bg-[var(--canvas-node-section-bg)] shrink-0">
-          <button
+          <div
+            role="button"
+            tabIndex={0}
             onClick={(e) => {
               e.stopPropagation();
               setPromptCollapsed(!promptCollapsed);
             }}
-            className="w-full flex items-center justify-between px-3 py-2 text-xs font-medium text-[var(--canvas-node-fg-muted)] hover:text-[var(--canvas-node-fg)] transition-colors"
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setPromptCollapsed(!promptCollapsed); }}
+            className="w-full flex items-center justify-between px-3 py-2 text-xs font-medium text-[var(--canvas-node-fg-muted)] hover:text-[var(--canvas-node-fg)] transition-colors cursor-pointer"
           >
             <span>{t('node.videoGen.promptPlaceholder')}</span>
             <div className="flex items-center gap-1">
               <PresetPickerButton onInsert={handlePresetInsert} />
               {promptCollapsed ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
             </div>
-          </button>
+          </div>
           {!promptCollapsed && (
             <div className="relative p-2 border-t border-[var(--canvas-node-border)]" style={{ height: '150px' }}>
               <div className="relative h-full overflow-hidden">
