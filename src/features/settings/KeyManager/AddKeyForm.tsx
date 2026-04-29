@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { UiSelect } from '@/components/ui/primitives'
 import type { AddKeyInput } from './useKeyManager'
 
 const BUILT_IN = [
@@ -80,15 +81,14 @@ export function AddKeyForm({ onSubmit }: Props) {
       {mode === 'builtin' ? (
         <label className="flex flex-col gap-1 text-sm text-[var(--ui-fg-muted)]">
           {t('settings.addKey.provider')}
-          <select
+          <UiSelect
             value={provider}
             onChange={(e) => setProvider(e.target.value)}
-            className={`${fieldCls} [color-scheme:light_dark]`}
           >
             {BUILT_IN.map((p) => (
               <option key={p.value} value={p.value}>{p.label}</option>
             ))}
-          </select>
+          </UiSelect>
         </label>
       ) : (
         <>
