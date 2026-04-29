@@ -107,7 +107,19 @@
     "langZh": "中文",
     "langEn": "English",
     "missingAnyApiKeyMessage": "尚未配置任何 API Key，AI 功能暂时不可用。",
-    "openProvidersSettings": "去配置"
+    "openProvidersSettings": "去配置",
+    "addKey": {
+      "builtinProvider": "内置 Provider",
+      "customEndpoint": "自定义 OpenAI-compat 端点",
+      "provider": "Provider",
+      "baseUrl": "Base URL",
+      "displayName": "显示名（可选）",
+      "displayNamePlaceholder": "My Aggregator",
+      "apiKey": "API Key",
+      "adding": "添加中...",
+      "add": "添加",
+      "customUrlRequired": "自定义端点需要 Base URL"
+    }
   },
   "canvas": {
     "addImage": "添加图片",

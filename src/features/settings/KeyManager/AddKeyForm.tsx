@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { AddKeyInput } from './useKeyManager'
 
 const BUILT_IN = [
@@ -17,6 +18,7 @@ interface Props {
 }
 
 export function AddKeyForm({ onSubmit }: Props) {
+  const { t } = useTranslation()
   const [mode, setMode] = useState<'builtin' | 'custom'>('builtin')
   const [provider, setProvider] = useState('kie')
   const [apiKey, setApiKey] = useState('')
@@ -37,7 +39,7 @@ export function AddKeyForm({ onSubmit }: Props) {
       if (mode === 'builtin') {
         await onSubmit({ provider, key: apiKey })
       } else {
-        if (!baseUrl) throw new Error('自定义端点需要 Base URL')
+        if (!baseUrl) throw new Error(t('settings.addKey.customUrlRequired'))
         await onSubmit({
           provider: customId(),
           key: apiKey,
@@ -56,23 +58,29 @@ export function AddKeyForm({ onSubmit }: Props) {
     }
   }
 
+  const inputCls = 'rounded border border-[var(--ui-line)] bg-[var(--ui-surface-field)] px-2 py-1 text-[var(--ui-fg)] placeholder:text-[var(--ui-fg-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--ui-primary)]'
+
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-2 rounded border p-3">
-      <div className="flex gap-4 text-sm">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-2 rounded border border-[var(--ui-line)] bg-[var(--ui-surface-field)] p-3">
+      <div className="flex gap-4 text-sm text-[var(--ui-fg)]">
         <label className="flex items-center gap-1">
           <input type="radio" checked={mode === 'builtin'} onChange={() => setMode('builtin')} />
-          内置 Provider
+          {t('settings.addKey.builtinProvider')}
         </label>
         <label className="flex items-center gap-1">
           <input type="radio" checked={mode === 'custom'} onChange={() => setMode('custom')} />
-          自定义 OpenAI-compat 端点
+          {t('settings.addKey.customEndpoint')}
         </label>
       </div>
 
       {mode === 'builtin' ? (
-        <label className="flex flex-col gap-1 text-sm">
-          Provider
-          <select value={provider} onChange={(e) => setProvider(e.target.value)} className="rounded border px-2 py-1">
+        <label className="flex flex-col gap-1 text-sm text-[var(--ui-fg-muted)]">
+          {t('settings.addKey.provider')}
+          <select
+            value={provider}
+            onChange={(e) => setProvider(e.target.value)}
+            className={inputCls}
+          >
             {BUILT_IN.map((p) => (
               <option key={p.value} value={p.value}>{p.label}</option>
             ))}
@@ -80,36 +88,36 @@ export function AddKeyForm({ onSubmit }: Props) {
         </label>
       ) : (
         <>
-          <label className="flex flex-col gap-1 text-sm">
-            Base URL
+          <label className="flex flex-col gap-1 text-sm text-[var(--ui-fg-muted)]">
+            {t('settings.addKey.baseUrl')}
             <input
               type="url"
               value={baseUrl}
               onChange={(e) => setBaseUrl(e.target.value)}
               placeholder="https://api.example.com/v1"
-              className="rounded border px-2 py-1"
+              className={inputCls}
             />
           </label>
-          <label className="flex flex-col gap-1 text-sm">
-            显示名(可选)
+          <label className="flex flex-col gap-1 text-sm text-[var(--ui-fg-muted)]">
+            {t('settings.addKey.displayName')}
             <input
               type="text"
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
-              placeholder="My Aggregator"
-              className="rounded border px-2 py-1"
+              placeholder={t('settings.addKey.displayNamePlaceholder')}
+              className={inputCls}
             />
           </label>
         </>
       )}
 
-      <label className="flex flex-col gap-1 text-sm">
-        API Key
+      <label className="flex flex-col gap-1 text-sm text-[var(--ui-fg-muted)]">
+        {t('settings.addKey.apiKey')}
         <input
           type="password"
           value={apiKey}
           onChange={(e) => setApiKey(e.target.value)}
-          className="rounded border px-2 py-1 font-mono"
+          className={`${inputCls} font-mono`}
           required
           minLength={8}
         />
@@ -120,9 +128,9 @@ export function AddKeyForm({ onSubmit }: Props) {
       <button
         type="submit"
         disabled={submitting}
-        className="self-start rounded bg-blue-600 px-3 py-1 text-sm text-white disabled:opacity-50"
+        className="self-start rounded bg-[var(--ui-primary)] px-3 py-1 text-sm text-white hover:bg-[var(--ui-primary-pressed)] disabled:opacity-50"
       >
-        {submitting ? '添加中...' : '添加'}
+        {submitting ? t('settings.addKey.adding') : t('settings.addKey.add')}
       </button>
     </form>
   )

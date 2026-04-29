@@ -107,7 +107,19 @@
     "langZh": "中文",
     "langEn": "English",
     "missingAnyApiKeyMessage": "No API keys configured. AI features are unavailable.",
-    "openProvidersSettings": "Configure"
+    "openProvidersSettings": "Configure",
+    "addKey": {
+      "builtinProvider": "Built-in Provider",
+      "customEndpoint": "Custom OpenAI-compat Endpoint",
+      "provider": "Provider",
+      "baseUrl": "Base URL",
+      "displayName": "Display Name (optional)",
+      "displayNamePlaceholder": "My Aggregator",
+      "apiKey": "API Key",
+      "adding": "Adding...",
+      "add": "Add",
+      "customUrlRequired": "Custom endpoint requires a Base URL"
+    }
   },
   "canvas": {
     "addImage": "Add Image",
