@@ -28,6 +28,12 @@ async function login(page: import('@playwright/test').Page) {
 
 /** Create a new project from dashboard and wait for canvas to load. Returns the project ID. */
 async function createProject(page: import('@playwright/test').Page): Promise<string> {
+  // Wizard may appear after login() if API-key fetch completes late — dismiss before clicking
+  const wizardClose = page.locator('button[aria-label="跳过引导"]')
+  if (await wizardClose.isVisible({ timeout: 3000 }).catch(() => false)) {
+    await wizardClose.click()
+    await expect(wizardClose).not.toBeVisible({ timeout: 3000 })
+  }
   await page.click('button:has-text("新建项目")')
   await page.waitForURL(/\/canvas\//, { timeout: 15000 })
   // Wait for canvas to be ready
@@ -264,8 +270,8 @@ test.describe('Wave M4: Onboarding & Canvas UX', () => {
     const projectId = await createProject(page)
     try {
       await openNodeMenu(page)
-      // ImageEdit 节点
-      const imageEditOption = page.locator('text=图片生成, text=图片编辑').first()
+      // ImageEdit 节点（菜单中显示 "AI 图片"）
+      const imageEditOption = page.locator('text=AI 图片').first()
       await expect(imageEditOption).toBeVisible({ timeout: 5000 })
       await imageEditOption.click()
 
